@@ -35,6 +35,15 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MouseNearBorders"",
+                    ""type"": ""Value"",
+                    ""id"": ""fd685aa1-913e-4017-8bde-ebcdbc918b5c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -92,6 +101,17 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
                     ""action"": ""Movements"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3032baae-a0aa-42c5-a9b7-db2609081510"",
+                    ""path"": ""<Pointer>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseNearBorders"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -101,6 +121,7 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
         // CameraControlMap
         m_CameraControlMap = asset.FindActionMap("CameraControlMap", throwIfNotFound: true);
         m_CameraControlMap_Movements = m_CameraControlMap.FindAction("Movements", throwIfNotFound: true);
+        m_CameraControlMap_MouseNearBorders = m_CameraControlMap.FindAction("MouseNearBorders", throwIfNotFound: true);
     }
 
     ~@CameraControls()
@@ -168,11 +189,13 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_CameraControlMap;
     private List<ICameraControlMapActions> m_CameraControlMapActionsCallbackInterfaces = new List<ICameraControlMapActions>();
     private readonly InputAction m_CameraControlMap_Movements;
+    private readonly InputAction m_CameraControlMap_MouseNearBorders;
     public struct CameraControlMapActions
     {
         private @CameraControls m_Wrapper;
         public CameraControlMapActions(@CameraControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movements => m_Wrapper.m_CameraControlMap_Movements;
+        public InputAction @MouseNearBorders => m_Wrapper.m_CameraControlMap_MouseNearBorders;
         public InputActionMap Get() { return m_Wrapper.m_CameraControlMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -185,6 +208,9 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
             @Movements.started += instance.OnMovements;
             @Movements.performed += instance.OnMovements;
             @Movements.canceled += instance.OnMovements;
+            @MouseNearBorders.started += instance.OnMouseNearBorders;
+            @MouseNearBorders.performed += instance.OnMouseNearBorders;
+            @MouseNearBorders.canceled += instance.OnMouseNearBorders;
         }
 
         private void UnregisterCallbacks(ICameraControlMapActions instance)
@@ -192,6 +218,9 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
             @Movements.started -= instance.OnMovements;
             @Movements.performed -= instance.OnMovements;
             @Movements.canceled -= instance.OnMovements;
+            @MouseNearBorders.started -= instance.OnMouseNearBorders;
+            @MouseNearBorders.performed -= instance.OnMouseNearBorders;
+            @MouseNearBorders.canceled -= instance.OnMouseNearBorders;
         }
 
         public void RemoveCallbacks(ICameraControlMapActions instance)
@@ -212,5 +241,6 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
     public interface ICameraControlMapActions
     {
         void OnMovements(InputAction.CallbackContext context);
+        void OnMouseNearBorders(InputAction.CallbackContext context);
     }
 }
