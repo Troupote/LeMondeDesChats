@@ -31,7 +31,7 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
                     ""name"": ""Movements"",
                     ""type"": ""Value"",
                     ""id"": ""bb5e4469-ed7d-4115-99fd-fdb47f80c447"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""expectedControlType"": ""Vector3"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -44,13 +44,22 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Rotation"",
+                    ""type"": ""Value"",
+                    ""id"": ""09e6f942-c35d-4381-af1a-7f19c9346f2f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
                 {
-                    ""name"": ""2D Vector"",
+                    ""name"": ""3D Vector"",
                     ""id"": ""72d8a0d9-c118-479a-9c64-4d8eb20d745f"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""3DVector"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -59,7 +68,7 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""up"",
+                    ""name"": ""Up"",
                     ""id"": ""d1b205a7-c3fc-452a-a80a-de20dc7de862"",
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
@@ -70,7 +79,7 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""down"",
+                    ""name"": ""Down"",
                     ""id"": ""5921b598-4d6d-473e-836a-db4eee641c78"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
@@ -81,7 +90,7 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""left"",
+                    ""name"": ""Left"",
                     ""id"": ""92f68ec5-8dca-4fca-9bab-306dc134d800"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
@@ -92,9 +101,31 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""right"",
+                    ""name"": ""Right"",
                     ""id"": ""9f134e46-18e8-4e03-8110-7b92a34832cc"",
                     ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movements"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Forward"",
+                    ""id"": ""efbe4597-509e-4f8a-8c14-d11962d6d174"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movements"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Backward"",
+                    ""id"": ""0c435a8b-12f0-4f39-8dc1-fde82121e0e9"",
+                    ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -122,6 +153,7 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
         m_CameraControlMap = asset.FindActionMap("CameraControlMap", throwIfNotFound: true);
         m_CameraControlMap_Movements = m_CameraControlMap.FindAction("Movements", throwIfNotFound: true);
         m_CameraControlMap_MouseNearBorders = m_CameraControlMap.FindAction("MouseNearBorders", throwIfNotFound: true);
+        m_CameraControlMap_Rotation = m_CameraControlMap.FindAction("Rotation", throwIfNotFound: true);
     }
 
     ~@CameraControls()
@@ -190,12 +222,14 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
     private List<ICameraControlMapActions> m_CameraControlMapActionsCallbackInterfaces = new List<ICameraControlMapActions>();
     private readonly InputAction m_CameraControlMap_Movements;
     private readonly InputAction m_CameraControlMap_MouseNearBorders;
+    private readonly InputAction m_CameraControlMap_Rotation;
     public struct CameraControlMapActions
     {
         private @CameraControls m_Wrapper;
         public CameraControlMapActions(@CameraControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movements => m_Wrapper.m_CameraControlMap_Movements;
         public InputAction @MouseNearBorders => m_Wrapper.m_CameraControlMap_MouseNearBorders;
+        public InputAction @Rotation => m_Wrapper.m_CameraControlMap_Rotation;
         public InputActionMap Get() { return m_Wrapper.m_CameraControlMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -211,6 +245,9 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
             @MouseNearBorders.started += instance.OnMouseNearBorders;
             @MouseNearBorders.performed += instance.OnMouseNearBorders;
             @MouseNearBorders.canceled += instance.OnMouseNearBorders;
+            @Rotation.started += instance.OnRotation;
+            @Rotation.performed += instance.OnRotation;
+            @Rotation.canceled += instance.OnRotation;
         }
 
         private void UnregisterCallbacks(ICameraControlMapActions instance)
@@ -221,6 +258,9 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
             @MouseNearBorders.started -= instance.OnMouseNearBorders;
             @MouseNearBorders.performed -= instance.OnMouseNearBorders;
             @MouseNearBorders.canceled -= instance.OnMouseNearBorders;
+            @Rotation.started -= instance.OnRotation;
+            @Rotation.performed -= instance.OnRotation;
+            @Rotation.canceled -= instance.OnRotation;
         }
 
         public void RemoveCallbacks(ICameraControlMapActions instance)
@@ -242,5 +282,6 @@ public partial class @CameraControls: IInputActionCollection2, IDisposable
     {
         void OnMovements(InputAction.CallbackContext context);
         void OnMouseNearBorders(InputAction.CallbackContext context);
+        void OnRotation(InputAction.CallbackContext context);
     }
 }
