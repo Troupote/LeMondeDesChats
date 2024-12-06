@@ -9,10 +9,11 @@ public class GridMaker : MonoBehaviour
     [SerializeField] private int row;
     [SerializeField] private GameObject prefab;
     private Vector2 initialPos;
-    [SerializeField, Range(0.01f, 20f)] private float scale;
+    //[SerializeField, Range(0.01f, 20f)] private float scale;
 
     private int index  = 0;
     private NavMeshBaker navMeshBaker;
+    public PerlinNoiseTexture perlinNoiseTexture;
 
 
     private void Start()
@@ -22,6 +23,7 @@ public class GridMaker : MonoBehaviour
         tilesPos = new Vector2[totalTiles];
         tilesPos[index++] = initialPos;
         navMeshBaker = GetComponent<NavMeshBaker>();
+
         TilesRegister();
         GenerateMap();
     }
@@ -62,7 +64,6 @@ public class GridMaker : MonoBehaviour
 
         index = 0;
     }
-
     void GenerateMap()
     {
         foreach (var elem in tilesPos)
@@ -71,21 +72,16 @@ public class GridMaker : MonoBehaviour
             float yCoord = elem.y;                                               
             float xCoordPerlin = (xCoord + row) / 2 * row;
             float yCoordPerlin = (yCoord + row) / 2 * row;
-            //float noiseValue = Mathf.PerlinNoise(xCoordPerlin*scale,yCoordPerlin*scale);
 
-             
-            int seed = 42;
-            PerlinNoise perlin = new PerlinNoise(42);
-            double noiseValue = perlin.Noise(xCoordPerlin*scale, yCoordPerlin*scale);
+            Vector2 randomVector2 = new Vector2(UnityEngine.Random.Range(0f, 100f), UnityEngine.Random.Range(0f, 100f));
 
-            Debug.Log(noiseValue);
+            perlinNoiseTexture.CreateTexture(perlinNoiseTexture.zoom, randomVector2);
+            float noiseValue = perlinNoiseTexture.GeneratePerlinNoise(perlinNoiseTexture.zoom,randomVector2,new Vector2(xCoord,yCoord));
+
+            //Debug.Log(noiseValue);
+            Debug.Log($"({xCoord},{yCoord})");
             Vector3 position = new Vector3(xCoord * Mathf.Sqrt(3) / 2, 0, yCoord * 1.5f);
             GameObject obj = Instantiate(prefab, position, Quaternion.identity, this.transform);
-            
-
-            index ++;
-            
-
             Renderer renderer = obj.GetComponent<Renderer>();
 
             if (noiseValue < 0.3f) 
