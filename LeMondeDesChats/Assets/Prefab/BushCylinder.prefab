@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 476227392479706783}
   - component: {fileID: 2814288321811830714}
   m_Layer: 0
-  m_Name: Cylinder
+  m_Name: BushCylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: a65f890039048d142880f87457157adb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be025a71bdde0d845bd9711926c2ed40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waypointsManager: {fileID: 4135083183317939886, guid: e4b2283bbc8eb0e48aa1d64399b1662d,
+  waypointsManager: {fileID: 5944354351624200178, guid: e7d914dcecd5c404f96b04ec91a4ccc1,
     type: 3}
   ressourceLayer:
     serializedVersion: 2
@@ -135,7 +135,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 3136950803437151167}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 1
+  m_Radius: 0.55
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
