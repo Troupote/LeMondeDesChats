@@ -26,12 +26,6 @@ public class AiController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         waypoints = waypointsManager.GetComponentsInChildren<Transform>().ToList();
-        Debug.Log("Waypoints List:");
-        foreach (var waypoint in waypoints)
-        {
-            Debug.Log(waypoint.name);
-        }
-        Debug.Log("Total Waypoints: " + waypoints.Count);
     }
 
     void Update()
