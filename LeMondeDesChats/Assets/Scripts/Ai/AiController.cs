@@ -29,7 +29,6 @@ public class AiController : MonoBehaviour
         if (waypoints.Count > 0)
         {
             currentWaypointIndex = Random.Range(0, waypoints.Count);
-            agent.avoidancePriority = Random.Range(0, 100);
             agent.SetDestination(waypoints[currentWaypointIndex].position);
         }
     }
@@ -40,11 +39,13 @@ public class AiController : MonoBehaviour
         {
             agent.SetDestination(target.position);
         }
-
-        if ((agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending) && waypoints.Count != 0)
+        else
         {
-            currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Count;
-            agent.SetDestination(waypoints[currentWaypointIndex].position);
+            if ((agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending) && waypoints.Count != 0)
+            {
+                currentWaypointIndex = Random.Range(0, waypoints.Count);
+                agent.SetDestination(waypoints[currentWaypointIndex].position);
+            } 
         }
     }
 }
