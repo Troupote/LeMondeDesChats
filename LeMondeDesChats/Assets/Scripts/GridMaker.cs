@@ -1,3 +1,4 @@
+using System;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,7 +9,7 @@ public class GridMaker : MonoBehaviour
     [SerializeField] private int row;
     [SerializeField] private GameObject prefab;
     private Vector2 initialPos;
-    [SerializeField, Range(0.01f, 2f)] private float scale;
+    [SerializeField, Range(0.01f, 20f)] private float scale;
 
     private int index  = 0;
     private NavMeshBaker navMeshBaker;
@@ -67,11 +68,16 @@ public class GridMaker : MonoBehaviour
         foreach (var elem in tilesPos)
         {
             float xCoord = elem.x;
-            float yCoord = elem.y;
-
+            float yCoord = elem.y;                                               
             float xCoordPerlin = (xCoord + row) / 2 * row;
             float yCoordPerlin = (yCoord + row) / 2 * row;
-            float noiseValue = Mathf.PerlinNoise(xCoordPerlin*scale,yCoordPerlin*scale);
+            //float noiseValue = Mathf.PerlinNoise(xCoordPerlin*scale,yCoordPerlin*scale);
+
+             
+            int seed = 42;
+            PerlinNoise perlin = new PerlinNoise(42);
+            double noiseValue = perlin.Noise(xCoordPerlin*scale, yCoordPerlin*scale);
+
             Debug.Log(noiseValue);
             Vector3 position = new Vector3(xCoord * Mathf.Sqrt(3) / 2, 0, yCoord * 1.5f);
             GameObject obj = Instantiate(prefab, position, Quaternion.identity, this.transform);
@@ -99,3 +105,4 @@ public class GridMaker : MonoBehaviour
         navMeshBaker.GenerateNavMesh(navMeshSurface);
     }
 }
+ 
