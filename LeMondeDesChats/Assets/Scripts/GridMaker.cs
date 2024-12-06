@@ -1,3 +1,4 @@
+using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,7 +8,7 @@ public class GridMaker : MonoBehaviour
     [SerializeField] private int row;
     [SerializeField] private GameObject prefab;
     private Vector2 initialPos;
-
+    [SerializeField, Range(0.01f, 2f)] private float scale;
 
     private int index  = 0;
     private NavMeshBaker navMeshBaker;
@@ -57,28 +58,35 @@ public class GridMaker : MonoBehaviour
         {
             //Debug.Log($"({elem.x},{elem.y})");
         }
+
+        index = 0;
     }
 
     void GenerateMap()
     {
-       
-
         foreach (var elem in tilesPos)
         {
             float xCoord = elem.x;
             float yCoord = elem.y;
-            float noiseValue = Mathf.PerlinNoise(xCoord / 100, yCoord / 100);
 
+            float xCoordPerlin = (xCoord + row) / 2 * row;
+            float yCoordPerlin = (yCoord + row) / 2 * row;
+            float noiseValue = Mathf.PerlinNoise(xCoordPerlin*scale,yCoordPerlin*scale);
+            Debug.Log(noiseValue);
             Vector3 position = new Vector3(xCoord * Mathf.Sqrt(3) / 2, 0, yCoord * 1.5f);
-            GameObject obj = Instantiate(prefab, position, Quaternion.identity, this.transform); 
+            GameObject obj = Instantiate(prefab, position, Quaternion.identity, this.transform);
+            
+
+            index ++;
+            
 
             Renderer renderer = obj.GetComponent<Renderer>();
 
-            if (noiseValue < 0.49f) 
+            if (noiseValue < 0.3f) 
             {
                 renderer.material.color = Color.yellow;
             }
-            else if (noiseValue < 0.52f)
+            else if (noiseValue < 0.7f)
             {
                 renderer.material.color = Color.green;
             }
@@ -87,7 +95,7 @@ public class GridMaker : MonoBehaviour
                 renderer.material.color = Color.red;
             }
         }
-
-        //navMeshBaker.GenerateNavMesh();
+        NavMeshSurface navMeshSurface = this.gameObject.AddComponent<NavMeshSurface>();
+        navMeshBaker.GenerateNavMesh(navMeshSurface);
     }
 }
