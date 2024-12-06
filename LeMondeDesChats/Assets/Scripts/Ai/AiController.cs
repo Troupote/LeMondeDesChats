@@ -20,12 +20,18 @@ public class AiController : MonoBehaviour
     [Header("Layer Settings")]
     [SerializeField]
     private LayerMask ressourceLayer;
-    private List<Transform> waypoints; 
+    private List<Transform> waypoints;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         waypoints = waypointsManager.GetComponentsInChildren<Transform>().ToList();
+        if (waypoints.Count > 0)
+        {
+            currentWaypointIndex = Random.Range(0, waypoints.Count);
+            agent.avoidancePriority = Random.Range(0, 100);
+            agent.SetDestination(waypoints[currentWaypointIndex].position);
+        }
     }
 
     void Update()
@@ -35,13 +41,10 @@ public class AiController : MonoBehaviour
             agent.SetDestination(target.position);
         }
 
-        
-
-        if ((agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending) & waypoints.Count != 0)
+        if ((agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending) && waypoints.Count != 0)
         {
             currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Count;
             agent.SetDestination(waypoints[currentWaypointIndex].position);
         }
     }
-
 }
