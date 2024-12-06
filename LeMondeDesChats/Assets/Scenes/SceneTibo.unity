@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e13f184a6f99fb44d898207f0ea1687b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nbEntity: 30
+  nbEntity: 300
   entityPrefab:
   - {fileID: 3136950803437151167, guid: 0189a5f933c5d5a41b863bcf7d8496d7, type: 3}
   - {fileID: 3136950803437151167, guid: 376f912fb52e5ff4bad502346b6bdeba, type: 3}
