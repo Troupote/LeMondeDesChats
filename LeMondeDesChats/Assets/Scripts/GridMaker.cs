@@ -1,110 +1,93 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GridMaker : MonoBehaviour
 {
-    private Vector3[] tilesPos;
+    private Vector2[] tilesPos;
     [SerializeField] private int row;
     [SerializeField] private GameObject prefab;
-    private Vector3 initialPos;
+    private Vector2 initialPos;
 
 
     private int index  = 0;
-
+    private NavMeshBaker navMeshBaker;
 
 
     private void Start()
     {
-        initialPos = new Vector3(0,0,0);
-        Instantiate(prefab,initialPos,Quaternion.identity);
-
-        int totalTiles = 1 + row * (row + 1) * 3; 
-        tilesPos = new Vector3[totalTiles];
-        
-
-        TilesPlacement();
+        initialPos = new Vector2(0,0);
+        int totalTiles = 1 + row * (row + 1) * 3 + row; 
+        tilesPos = new Vector2[totalTiles];
+        tilesPos[index++] = initialPos;
+        navMeshBaker = GetComponent<NavMeshBaker>();
+        TilesRegister();
+        GenerateMap();
     }
-
-    void TilesPlacement()
-    {
-        Vector3[] NeighborOffsets = new Vector3[]
-        {
-            new Vector3(-(Mathf.Sqrt(3) / 2) * 2,0, 0),  
-            new Vector3(-(Mathf.Sqrt(3) / 2) ,0, 1.5f),  
-            new Vector3(Mathf.Sqrt(3) / 2,0,1.5f ),
-            new Vector3((Mathf.Sqrt(3) / 2) * 2,0, 0),
-            new Vector3((Mathf.Sqrt(3) / 2) ,0, -1.5f),
-            new Vector3(-Mathf.Sqrt(3) / 2, 0, -1.5f)
-
-        };
-        for(int i = 1; i < row+1;i++)
-        {
-            Vector3 transitionPos = initialPos + new Vector3(Mathf.Sqrt(3) / 2, 0, -1.5f) * i;
-            GameObject uil = Instantiate(prefab, transitionPos, Quaternion.identity);
-            Renderer renderer = uil.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                renderer.material.color = Color.Lerp(Color.red, Color.blue, (float)i / row);
-            }
-            for (int j = 0;j<6;j++)
-            {
-                for (int k = 0;k<i;k++)
-                {
-                    transitionPos += NeighborOffsets[j%6];
-                    GameObject ui = Instantiate(prefab, transitionPos, Quaternion.identity);
-                    ui.name = $"{i} + {j} + {k}";
-                    Renderer rendererd = ui.GetComponent<Renderer>();
-                    if (rendererd != null)
-                    {
-                        rendererd.material.color = Color.Lerp(Color.red, Color.blue, (float)i / row);
-                    }
-
-                }
-            }
-
-        }
-    }
-
 
     void TilesRegister()
     {
-        Vector3[] NeighborOffsets = new Vector3[]
+        Vector2[] NeighborOffsets = new Vector2[]
         {
-            new Vector3(-(Mathf.Sqrt(3) / 2) * 2,0, 0),
-            new Vector3(-(Mathf.Sqrt(3) / 2) ,0, 1.5f),
-            new Vector3(Mathf.Sqrt(3) / 2,0,1.5f ),
-            new Vector3((Mathf.Sqrt(3) / 2) * 2,0, 0),
-            new Vector3((Mathf.Sqrt(3) / 2) ,0, -1.5f),
-            new Vector3(-Mathf.Sqrt(3) / 2, 0, -1.5f)
+            new Vector2(-2, 0),
+            new Vector2(-1 , 1),
+            new Vector2(1,1),
+            new Vector2(2,0),
+            new Vector2(1 ,-1),
+            new Vector2(-1, -1)
 
         };
         for (int i = 1; i < row + 1; i++)
         {
-            Vector3 transitionPos = initialPos + new Vector3(Mathf.Sqrt(3) / 2, 0, -1.5f) * i;
-            
-            GameObject uil = Instantiate(prefab, transitionPos, Quaternion.identity);
-            tilesPos[index++] = transitionPos;
-            Renderer renderer = uil.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                renderer.material.color = Color.Lerp(Color.red, Color.blue, (float)i / row);
-            }
+            Vector2 transitionPos = initialPos + new Vector2(1, -1) * i;
+             tilesPos[index++] = transitionPos;
+
             for (int j = 0; j < 6; j++)
             {
                 for (int k = 0; k < i; k++)
                 {
                     transitionPos += NeighborOffsets[j % 6];
-                    GameObject ui = Instantiate(prefab, transitionPos, Quaternion.identity);
                     tilesPos[index++] = transitionPos;
-                    ui.name = $"{i} + {j} + {k}";
-                    Renderer rendererd = ui.GetComponent<Renderer>();
-                    if (rendererd != null)
-                    {
-                        rendererd.material.color = Color.Lerp(Color.red, Color.blue, (float)i / row);
-                    }
 
                 }
             }
 
         }
+
+        foreach (var elem in tilesPos)
+        {
+            //Debug.Log($"({elem.x},{elem.y})");
+        }
+    }
+
+    void GenerateMap()
+    {
+       
+
+        foreach (var elem in tilesPos)
+        {
+            float xCoord = elem.x;
+            float yCoord = elem.y;
+            float noiseValue = Mathf.PerlinNoise(xCoord / 100, yCoord / 100);
+
+            Vector3 position = new Vector3(xCoord * Mathf.Sqrt(3) / 2, 0, yCoord * 1.5f);
+            GameObject obj = Instantiate(prefab, position, Quaternion.identity, this.transform); 
+
+            Renderer renderer = obj.GetComponent<Renderer>();
+
+            if (noiseValue < 0.49f) 
+            {
+                renderer.material.color = Color.yellow;
+            }
+            else if (noiseValue < 0.52f)
+            {
+                renderer.material.color = Color.green;
+            }
+            else
+            {
+                renderer.material.color = Color.red;
+            }
+        }
+
+        //navMeshBaker.GenerateNavMesh();
     }
 }
