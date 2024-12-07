@@ -1,6 +1,7 @@
 using System;
 using Unity.AI.Navigation;
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 public class GridMaker : MonoBehaviour
@@ -66,36 +67,45 @@ public class GridMaker : MonoBehaviour
     }
     void GenerateMap()
     {
+        float minX = 0; float minY = 0;
+        var colorValues = new List<Vector2>();
         foreach (var elem in tilesPos)
+        {
+            minX = minX>elem.x ? elem.x : minX;
+            minY = minX > elem.x ? elem.x : minX;
+            colorValues.Add(elem);
+        }
+
+
+            foreach (var elem in tilesPos)
         {
             float xCoord = elem.x;
             float yCoord = elem.y;                                               
-            float xCoordPerlin = (xCoord + row) / 2 * row;
-            float yCoordPerlin = (yCoord + row) / 2 * row;
+            float xCoordPerlin = (xCoord - minX);
+            float yCoordPerlin = (yCoord - minY) ;
 
-            Vector2 randomVector2 = new Vector2(UnityEngine.Random.Range(0f, 100f), UnityEngine.Random.Range(0f, 100f));
+            //Vector2 randomVector2 = new Vector2(UnityEngine.Random.Range(0f, 100f), UnityEngine.Random.Range(0f, 100f));
 
-            perlinNoiseTexture.CreateTexture(perlinNoiseTexture.zoom, randomVector2);
-            float noiseValue = perlinNoiseTexture.GeneratePerlinNoise(perlinNoiseTexture.zoom,randomVector2,new Vector2(xCoord,yCoord));
+            perlinNoiseTexture.CreateTexture(perlinNoiseTexture.zoom, Vector2.zero,colorValues);
+            float noiseValue = perlinNoiseTexture.GeneratePerlinNoise(perlinNoiseTexture.zoom, Vector2.zero, new Vector2(xCoordPerlin,yCoordPerlin));
 
             //Debug.Log(noiseValue);
-            Debug.Log($"({xCoord},{yCoord})");
+            //Debug.Log($"({xCoord - minX},{yCoord - minY})");
             Vector3 position = new Vector3(xCoord * Mathf.Sqrt(3) / 2, 0, yCoord * 1.5f);
             GameObject obj = Instantiate(prefab, position, Quaternion.identity, this.transform);
             Renderer renderer = obj.GetComponent<Renderer>();
+            noiseValue = Mathf.Clamp01(noiseValue);
+            //renderer.material.color = new Color(noiseValue, noiseValue, noiseValue);
 
-            if (noiseValue < 0.3f) 
-            {
-                renderer.material.color = Color.yellow;
-            }
-            else if (noiseValue < 0.7f)
-            {
-                renderer.material.color = Color.green;
-            }
-            else
-            {
-                renderer.material.color = Color.red;
-            }
+            if (noiseValue < 0.4f) // Eau
+                renderer.material.color = new Color(0f, 0f, 0.8f); // Bleu
+            else if (noiseValue < 0.6f) // Plaines ou forêts
+                renderer.material.color = new Color(0.1f, 0.8f, 0.1f); // Vert
+            else if (noiseValue < 0.8f) // Montagnes
+                renderer.material.color = new Color(1f, 0.5f, 0f); // Gris
+            else // Sommets enneigés
+                renderer.material.color = new Color(1f, 0f, 1f); // Blanc
+
         }
         NavMeshSurface navMeshSurface = this.gameObject.AddComponent<NavMeshSurface>();
         navMeshBaker.GenerateNavMesh(navMeshSurface);

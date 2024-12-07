@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,13 +17,13 @@ public class PerlinNoiseTexture : MonoBehaviour
 
     }
 
-    public void CreateTexture(float zoom, Vector2 offset)
+    public void CreateTexture(float zoom, Vector2 offset,List<Vector2> colorValues)
     {
-        Texture2D texture = GeneratePerlinNoiseTexture();
+        Texture2D texture = GeneratePerlinNoiseTexture(colorValues);
         image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
     }
 
-    Texture2D GeneratePerlinNoiseTexture()
+    Texture2D GeneratePerlinNoiseTexture(List<Vector2> colorValues)
     {
         Texture2D texture = new Texture2D(textureWidth, textureHeight);
 
@@ -33,7 +35,9 @@ public class PerlinNoiseTexture : MonoBehaviour
                 float yCoord = (float)y / textureHeight * zoom + offset.y;
                 float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
                 perlinValue = Mathf.Clamp01(perlinValue);
+                //if (colorValues.Contains(new Vector2(xCoord, yCoord)))
                 texture.SetPixel(x, y, new Color(perlinValue, perlinValue, perlinValue));
+                //Debug.Log(new Vector2(xCoord, yCoord));
             }
         }
 
@@ -44,11 +48,12 @@ public class PerlinNoiseTexture : MonoBehaviour
     public float GeneratePerlinNoise(float zoom, Vector2 offset,Vector2 pos)
     {
 
-        float xCoord = (float)pos.x / textureWidth * zoom + offset.x;
-        float yCoord = (float)pos.y / textureHeight * zoom + offset.y;
+        float xCoord = ((float)pos.x / textureWidth) * zoom + offset.x;
+        float yCoord = ((float)pos.y / textureHeight) * zoom + offset.y;
         float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
         perlinValue = Mathf.Clamp01(perlinValue);
-
+        //Debug.Log("dflmfd" + new Vector2(xCoord, yCoord)+ pos);
+        Debug.Log(perlinValue);
         return perlinValue;
     }
 }
