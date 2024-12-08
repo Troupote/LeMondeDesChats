@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,16 +6,13 @@ public class AiController : MonoBehaviour
 {
     [Header("Waypoints Settings")]
     [SerializeField]
-    private GameObject waypointsManager;
+    private Tag TagOfWork;
 
     private NavMeshAgent agent;
 
     [Header("Layer Settings")]
     [SerializeField]
     private LayerMask ressourceLayer;
-
-    [SerializeField]
-    private Tag TagOfWork;
 
     private List<Transform> workWaypoints = new List<Transform>();
     private List<Transform> foodWaypoints = new List<Transform>();
@@ -30,15 +26,27 @@ public class AiController : MonoBehaviour
     }
 
     private AiState etatActuel;
+
     [SerializeField]
     private float dureeEtat = 10f; // Durée de chaque état en secondes
     private float tempsEcoule;
 
+    public float fatigue;
+    private const float fatigueMax = 100f;         // Seuil maximal de fatigue
+    private const float fatigueParSeconde = 5f;    // Fatigue accumulée par seconde
+
+    public int age = 0; // Âge de l'individu en jours
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        Initialize();
+    }
 
-        var workWaypointObjects = GameObject.FindGameObjectsWithTag(TagOfWork);
+    public void Initialize()
+    {
+        // Trouver les waypoints en fonction des tags
+        var workWaypointObjects = GameObject.FindGameObjectsWithTag(TagOfWork.stringTag);
         var foodWaypointObjects = GameObject.FindGameObjectsWithTag("FoodWaypoint");
         var restWaypointObjects = GameObject.FindGameObjectsWithTag("RestWaypoint");
 
@@ -59,24 +67,42 @@ public class AiController : MonoBehaviour
 
         etatActuel = AiState.Travail;
         tempsEcoule = Random.Range(0f, dureeEtat);
+        fatigue = 0f; // Initialiser la fatigue à 0
         DefinirDestination();
+
+        // Enregistrer cet individu auprès du TimeManager
+        TimeManager timeManager = FindObjectOfType<TimeManager>();
+        if (timeManager != null)
+        {
+            timeManager.RegisterIndividual(this);
+        }
     }
 
     void Update()
     {
         tempsEcoule += Time.deltaTime;
+
+        // Augmenter la fatigue lorsque l'agent travaille ou se déplace
+        if (etatActuel == AiState.Travail || etatActuel == AiState.Nourriture)
+        {
+            fatigue += fatigueParSeconde * Time.deltaTime;
+            fatigue = Mathf.Min(fatigue, fatigueMax); // Limiter la fatigue au maximum
+        }
+
+        // Vérifier si l'agent est fatigué
+        if (fatigue >= fatigueMax && etatActuel != AiState.Repos)
+        {
+            etatActuel = AiState.Repos;
+            tempsEcoule = 0f; // Réinitialiser le temps écoulé pour le nouvel état
+            DefinirDestination();
+            return;
+        }
+
         if (tempsEcoule >= dureeEtat)
         {
             tempsEcoule = 0f;
             etatActuel = ObtenirEtatSuivant(etatActuel);
-            Debug.Log("Changement d'état: " + etatActuel);
             DefinirDestination();
-        }
-
-        if (agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
-        {
-            Debug.Log("Arrivé à destination, définir une nouvelle destination");
-            DefinirDestination(); // L'agent est arrivé à destination, définir une nouvelle destination
         }
     }
 
@@ -86,10 +112,21 @@ public class AiController : MonoBehaviour
         {
             case AiState.Travail:
                 return AiState.Nourriture;
+
             case AiState.Nourriture:
-                return AiState.Repos;
+                if (fatigue >= fatigueMax)
+                {
+                    return AiState.Repos;
+                }
+                else
+                {
+                    return AiState.Travail;
+                }
+
             case AiState.Repos:
-                return AiState.Travail;
+                fatigue = 0f;
+                return AiState.Nourriture;
+
             default:
                 return AiState.Travail;
         }
@@ -103,26 +140,42 @@ public class AiController : MonoBehaviour
                 if (workWaypoints.Count > 0)
                 {
                     int index = Random.Range(0, workWaypoints.Count);
-                    Debug.Log("Nouvelle destination de travail: " + workWaypoints[index].position);
                     agent.SetDestination(workWaypoints[index].position);
                 }
                 break;
+
             case AiState.Nourriture:
                 if (foodWaypoints.Count > 0)
                 {
                     int index = Random.Range(0, foodWaypoints.Count);
-                    Debug.Log("Nouvelle destination de nourriture: " + foodWaypoints[index].position);
                     agent.SetDestination(foodWaypoints[index].position);
                 }
                 break;
+
             case AiState.Repos:
                 if (restWaypoints.Count > 0)
                 {
                     int index = Random.Range(0, restWaypoints.Count);
-                    Debug.Log("Nouvelle destination de repos: " + restWaypoints[index].position);
                     agent.SetDestination(restWaypoints[index].position);
                 }
                 break;
+        }
+    }
+
+    public void AgeOneDay()
+    {
+        age++;
+        Debug.Log(gameObject.name + " a maintenant " + age + " jours.");
+        // Ajouter de la logique supplémentaire en fonction de l'âge (par exemple, mourir après un certain âge)
+    }
+
+    void OnDestroy()
+    {
+        // Se désenregistrer du TimeManager lorsque l'agent est détruit
+        TimeManager timeManager = FindObjectOfType<TimeManager>();
+        if (timeManager != null)
+        {
+            timeManager.UnregisterIndividual(this);
         }
     }
 }
