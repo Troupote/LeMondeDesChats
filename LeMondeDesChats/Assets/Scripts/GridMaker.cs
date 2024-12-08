@@ -16,7 +16,7 @@ public class GridMaker : MonoBehaviour
     private NavMeshBaker navMeshBaker;
     public PerlinNoiseTexture perlinNoiseTexture;
 
-
+    [ContextMenu("GenerateMesh")]
     private void Start()
     {
         initialPos = new Vector2(0,0);
