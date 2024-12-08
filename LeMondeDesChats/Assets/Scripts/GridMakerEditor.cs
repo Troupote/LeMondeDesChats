@@ -10,6 +10,7 @@ public class GridMakerEditor : MonoBehaviour
     private Vector2[] tilesPos;
     [SerializeField] private int row;
     [SerializeField] private GameObject prefab;
+    [SerializeField] private float _heightMultiplier = 5;
     private Vector2 initialPos;
     //[SerializeField, Range(0.01f, 20f)] private float scale;
 
@@ -109,7 +110,7 @@ public class GridMakerEditor : MonoBehaviour
             //Debug.Log($"({xCoord - minX},{yCoord - minY})");
 
             // -- Instatiate tile
-            Vector3 position = new Vector3(xCoord * Mathf.Sqrt(3) / 2, noiseValue * 5, yCoord * 1.5f);
+            Vector3 position = new Vector3(xCoord * Mathf.Sqrt(3) / 2, noiseValue * _heightMultiplier, yCoord * 1.5f);
             float zoneValue = _zoneTexture.GetPixel(Mathf.RoundToInt(xCoordPerlin), Mathf.RoundToInt(yCoordPerlin)).r;
             GameObject prefabToSpawn/* = _tiles[Random.Range(0, _tiles.Length)]*/;
             // -- Assign color

@@ -31,7 +31,6 @@ public class BuildManager : MonoBehaviour
 
     public void StopBuilding()
     {
-        Debug.Log("Stop Building");
         IsBuilding = false;
         Building = null;
     }
