@@ -41,7 +41,36 @@ public class TimeManager : MonoBehaviour
         {
             ai.AgeOneDay();
         }
+
+        // Consommation de nourriture
+        int totalIndividus = individuals.Count;
+        int nourritureDisponible = RessourcesGlobales.Instance.nourriture;
+
+        if (nourritureDisponible >= totalIndividus)
+        {
+            RessourcesGlobales.Instance.nourriture -= totalIndividus;
+        }
+        else
+        {
+            // Pas assez de nourriture, des individus meurent aléatoirement
+            int deficit = totalIndividus - nourritureDisponible;
+            RessourcesGlobales.Instance.nourriture = 0;
+
+            for (int i = 0; i < deficit; i++)
+            {
+                if (individuals.Count > 0)
+                {
+                    int index = Random.Range(0, individuals.Count);
+                    AiController individuAffame = individuals[index];
+                    individuals.RemoveAt(index);
+                    Destroy(individuAffame.gameObject);
+                    Debug.Log(individuAffame.gameObject.name + " est mort de faim.");
+                }
+            }
+        }
+        Debug.Log("Fin du jour " + currentDay + ". Tous les individus ont vieilli.");
     }
+
 
     void SpawnNewIndividual()
     {
@@ -78,4 +107,7 @@ public class TimeManager : MonoBehaviour
         if (individuals.Contains(ai))
             individuals.Remove(ai);
     }
+
+
+
 }
