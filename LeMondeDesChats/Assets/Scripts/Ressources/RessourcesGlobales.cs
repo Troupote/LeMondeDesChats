@@ -5,7 +5,8 @@ public class RessourcesGlobales : MonoBehaviour
     public static RessourcesGlobales Instance;
 
     public int nourriture = 0;
-    public int bois = 0;
+    [SerializeField]
+    public int bois { get; private set; } = 0;
     public int pierre = 0;
 
     void Awake()
