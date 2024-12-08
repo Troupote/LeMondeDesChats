@@ -121,13 +121,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be025a71bdde0d845bd9711926c2ed40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waypointsManager: {fileID: 3495715299536861506, guid: abf5c1ee76f9a974591b9c0a040f760d,
-    type: 3}
+  TagOfWork:
+    stringTag: MineWaypoint
   ressourceLayer:
     serializedVersion: 2
     m_Bits: 0
-  TagOfWork:
-    stringTag: MineWaypoint
   dureeEtat: 10
 --- !u!195 &2814288321811830714
 NavMeshAgent:
