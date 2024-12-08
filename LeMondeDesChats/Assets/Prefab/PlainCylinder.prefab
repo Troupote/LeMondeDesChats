@@ -129,6 +129,7 @@ MonoBehaviour:
   workWaypoints: []
   foodWaypoints: []
   restWaypoints: []
+  wandererWaypoints: []
   dureeEtat: 10
   variationEtat: 2
   fatigue: 0
