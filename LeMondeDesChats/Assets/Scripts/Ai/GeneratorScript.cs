@@ -25,9 +25,4 @@ public class GeneratorScript : MonoBehaviour
             Instantiate(entityPrefab[randomIndex], randomPosition, Quaternion.identity, gameObject.transform).GetComponent<NavMeshAgent>();
         }
     }
-
-	// Update is called once per frame
-	void Update()
-	{
-	}
 }

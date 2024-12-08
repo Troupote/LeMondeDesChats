@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,42 +9,112 @@ public class AiController : MonoBehaviour
     [SerializeField]
     private GameObject waypointsManager;
 
-    private int workSchedule = 0;
-
-    private Transform target;
-
     private NavMeshAgent agent;
 
-    [Space]
     [Header("Layer Settings")]
     [SerializeField]
     private LayerMask ressourceLayer;
-    private List<Transform> waypoints;
+
+    private List<Transform> workWaypoints;
+    private List<Transform> foodWaypoints;
+    private List<Transform> restWaypoints;
+
+    private enum AiState
+    {
+        Travail,
+        Nourriture,
+        Repos
+    }
+
+    private AiState etatActuel;
+    [SerializeField]
+    private float dureeEtat = 10f; // Durée de chaque état en secondes
+    private float tempsEcoule;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        waypoints = waypointsManager.GetComponentsInChildren<Transform>().ToList();
-        if (waypoints.Count > 0)
+
+        var workWaypointObjects = GameObject.FindGameObjectsWithTag("WorkWaypoint");
+        var foodWaypointObjects = GameObject.FindGameObjectsWithTag("FoodWaypoint");
+        var restWaypointObjects = GameObject.FindGameObjectsWithTag("RestWaypoint");
+
+        foreach (var obj in workWaypointObjects)
         {
-            workSchedule = Random.Range(0, waypoints.Count);
-            agent.SetDestination(waypoints[workSchedule].position);
+            workWaypoints.Add(obj.transform);
         }
+
+        foreach (var obj in foodWaypointObjects)
+        {
+            foodWaypoints.Add(obj.transform);
+        }
+
+        foreach (var obj in restWaypointObjects)
+        {
+            restWaypoints.Add(obj.transform);
+        }
+
+        etatActuel = AiState.Travail;
+        tempsEcoule = 0f;
+        DefinirDestination();
     }
 
     void Update()
     {
-        if (target != null)
+        tempsEcoule += Time.deltaTime;
+        if (tempsEcoule >= dureeEtat)
         {
-            agent.SetDestination(target.position);
+            tempsEcoule = 0f;
+            etatActuel = ObtenirEtatSuivant(etatActuel);
+            DefinirDestination();
         }
-        else
+
+        if (agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
         {
-            if ((agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending) && waypoints.Count != 0)
-            {
-                workSchedule = Random.Range(0, waypoints.Count);
-                agent.SetDestination(waypoints[workSchedule].position);
-            } 
+            // L'agent est arrivé à destination
+        }
+    }
+
+    AiState ObtenirEtatSuivant(AiState etatActuel)
+    {
+        switch (etatActuel)
+        {
+            case AiState.Travail:
+                return AiState.Nourriture;
+            case AiState.Nourriture:
+                return AiState.Repos;
+            case AiState.Repos:
+                return AiState.Travail;
+            default:
+                return AiState.Travail;
+        }
+    }
+
+    void DefinirDestination()
+    {
+        switch (etatActuel)
+        {
+            case AiState.Travail:
+                if (workWaypoints.Count > 0)
+                {
+                    int index = Random.Range(0, workWaypoints.Count);
+                    agent.SetDestination(workWaypoints[index].position);
+                }
+                break;
+            case AiState.Nourriture:
+                if (foodWaypoints.Count > 0)
+                {
+                    int index = Random.Range(0, foodWaypoints.Count);
+                    agent.SetDestination(foodWaypoints[index].position);
+                }
+                break;
+            case AiState.Repos:
+                if (restWaypoints.Count > 0)
+                {
+                    int index = Random.Range(0, restWaypoints.Count);
+                    agent.SetDestination(restWaypoints[index].position);
+                }
+                break;
         }
     }
 }
