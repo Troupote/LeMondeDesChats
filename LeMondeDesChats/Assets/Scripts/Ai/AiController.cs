@@ -10,7 +10,7 @@ public class AiController : MonoBehaviour
     [SerializeField]
     private GameObject waypointsManager;
 
-    private int currentWaypointIndex = 0;
+    private int workSchedule = 0;
 
     private Transform target;
 
@@ -28,8 +28,8 @@ public class AiController : MonoBehaviour
         waypoints = waypointsManager.GetComponentsInChildren<Transform>().ToList();
         if (waypoints.Count > 0)
         {
-            currentWaypointIndex = Random.Range(0, waypoints.Count);
-            agent.SetDestination(waypoints[currentWaypointIndex].position);
+            workSchedule = Random.Range(0, waypoints.Count);
+            agent.SetDestination(waypoints[workSchedule].position);
         }
     }
 
@@ -43,8 +43,8 @@ public class AiController : MonoBehaviour
         {
             if ((agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending) && waypoints.Count != 0)
             {
-                currentWaypointIndex = Random.Range(0, waypoints.Count);
-                agent.SetDestination(waypoints[currentWaypointIndex].position);
+                workSchedule = Random.Range(0, waypoints.Count);
+                agent.SetDestination(waypoints[workSchedule].position);
             } 
         }
     }

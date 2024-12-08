@@ -12,15 +12,19 @@ public class GeneratorScript : MonoBehaviour
 	[SerializeField]
 	private GameObject[] entityPrefab;
 
-	void Start()
-	{
-		for (int i = 0; i < nbEntity; i++)
-		{
+    void Start()
+    {
+        for (int i = 0; i < nbEntity; i++)
+        {
             int randomIndex = Random.Range(0, entityPrefab.Length);
-            Instantiate(entityPrefab[randomIndex], transform.position, Quaternion.identity,gameObject.transform).GetComponent<NavMeshAgent>().avoidancePriority = i % 100; 
+            Vector3 randomPosition = new Vector3(
+                transform.position.x + Random.Range(-5.0f, 5.0f),
+                transform.position.y,
+                transform.position.z + Random.Range(-5.0f, 5.0f)
+            );
+            Instantiate(entityPrefab[randomIndex], randomPosition, Quaternion.identity, gameObject.transform).GetComponent<NavMeshAgent>();
         }
-		
-	}
+    }
 
 	// Update is called once per frame
 	void Update()
