@@ -15,9 +15,12 @@ public class AiController : MonoBehaviour
     [SerializeField]
     private LayerMask ressourceLayer;
 
-    private List<Transform> workWaypoints;
-    private List<Transform> foodWaypoints;
-    private List<Transform> restWaypoints;
+    [SerializeField]
+    private Tag TagOfWork;
+
+    private List<Transform> workWaypoints = new List<Transform>();
+    private List<Transform> foodWaypoints = new List<Transform>();
+    private List<Transform> restWaypoints = new List<Transform>();
 
     private enum AiState
     {
@@ -35,7 +38,7 @@ public class AiController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
 
-        var workWaypointObjects = GameObject.FindGameObjectsWithTag("WorkWaypoint");
+        var workWaypointObjects = GameObject.FindGameObjectsWithTag(TagOfWork);
         var foodWaypointObjects = GameObject.FindGameObjectsWithTag("FoodWaypoint");
         var restWaypointObjects = GameObject.FindGameObjectsWithTag("RestWaypoint");
 
@@ -55,7 +58,7 @@ public class AiController : MonoBehaviour
         }
 
         etatActuel = AiState.Travail;
-        tempsEcoule = 0f;
+        tempsEcoule = Random.Range(0f, dureeEtat);
         DefinirDestination();
     }
 
@@ -66,12 +69,14 @@ public class AiController : MonoBehaviour
         {
             tempsEcoule = 0f;
             etatActuel = ObtenirEtatSuivant(etatActuel);
+            Debug.Log("Changement d'état: " + etatActuel);
             DefinirDestination();
         }
 
         if (agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
         {
-            // L'agent est arrivé à destination
+            Debug.Log("Arrivé à destination, définir une nouvelle destination");
+            DefinirDestination(); // L'agent est arrivé à destination, définir une nouvelle destination
         }
     }
 
@@ -98,6 +103,7 @@ public class AiController : MonoBehaviour
                 if (workWaypoints.Count > 0)
                 {
                     int index = Random.Range(0, workWaypoints.Count);
+                    Debug.Log("Nouvelle destination de travail: " + workWaypoints[index].position);
                     agent.SetDestination(workWaypoints[index].position);
                 }
                 break;
@@ -105,6 +111,7 @@ public class AiController : MonoBehaviour
                 if (foodWaypoints.Count > 0)
                 {
                     int index = Random.Range(0, foodWaypoints.Count);
+                    Debug.Log("Nouvelle destination de nourriture: " + foodWaypoints[index].position);
                     agent.SetDestination(foodWaypoints[index].position);
                 }
                 break;
@@ -112,6 +119,7 @@ public class AiController : MonoBehaviour
                 if (restWaypoints.Count > 0)
                 {
                     int index = Random.Range(0, restWaypoints.Count);
+                    Debug.Log("Nouvelle destination de repos: " + restWaypoints[index].position);
                     agent.SetDestination(restWaypoints[index].position);
                 }
                 break;
