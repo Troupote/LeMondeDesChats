@@ -13,6 +13,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building Tile
       objectReference: {fileID: 0}
+    - target: {fileID: 144600065174172730, guid: d5186599d1ccf7044bda79d313fbf297,
+        type: 3}
+      propertyPath: m_TagString
+      value: RestWaypoint
+      objectReference: {fileID: 0}
     - target: {fileID: 1504356061251956219, guid: d5186599d1ccf7044bda79d313fbf297,
         type: 3}
       propertyPath: m_LocalPosition.y
