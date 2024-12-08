@@ -18,7 +18,9 @@ public class GridMakerEditor : MonoBehaviour
     private NavMeshBaker navMeshBaker;
     //public PerlinNoiseTexture perlinNoiseTexture;
     [SerializeField] private Texture2D _heightTexture;
+    [SerializeField] private float _heightTextureFactor = 2;
     [SerializeField] private Texture2D _zoneTexture;
+    [SerializeField] private float _zoneTextureFactor = 2;
     [SerializeField] private GameObject[] _tiles;
     [SerializeField] private Material[] _tileMaterials;
 
@@ -83,6 +85,8 @@ public class GridMakerEditor : MonoBehaviour
     void GenerateMap()
     {
         DestroyAllChildren();
+        var currentScale = transform.localScale;
+        transform.localScale = Vector3.one;
 
         float minX = 0; float minY = 0;
         var colorValues = new List<Vector2>();
@@ -104,26 +108,27 @@ public class GridMakerEditor : MonoBehaviour
 
             //perlinNoiseTexture.CreateTexture(perlinNoiseTexture.zoom, Vector2.zero,colorValues);
             //float noiseValue = perlinNoiseTexture.GeneratePerlinNoise(perlinNoiseTexture.zoom, Vector2.zero, new Vector2(xCoordPerlin, yCoordPerlin));
-            float noiseValue = _heightTexture.GetPixel(Mathf.RoundToInt(xCoordPerlin), Mathf.RoundToInt(yCoordPerlin)).r ; // Get Texture Pixel;
+            float noiseValue = _heightTexture.GetPixel(Mathf.RoundToInt(xCoordPerlin * _heightTextureFactor), Mathf.RoundToInt(yCoordPerlin * _heightTextureFactor)).r ; // Get Texture Pixel;
 
             //Debug.Log(noiseValue);
             //Debug.Log($"({xCoord - minX},{yCoord - minY})");
 
             // -- Instatiate tile
             Vector3 position = new Vector3(xCoord * Mathf.Sqrt(3) / 2, noiseValue * _heightMultiplier, yCoord * 1.5f);
-            float zoneValue = _zoneTexture.GetPixel(Mathf.RoundToInt(xCoordPerlin), Mathf.RoundToInt(yCoordPerlin)).r;
+            float zoneValue = _zoneTexture.GetPixel(Mathf.RoundToInt(xCoordPerlin * _zoneTextureFactor), Mathf.RoundToInt(yCoordPerlin * _zoneTextureFactor)).r;
             GameObject prefabToSpawn/* = _tiles[Random.Range(0, _tiles.Length)]*/;
-            // -- Assign color
-            if (zoneValue < 0.25f) // Eau
+            // -- Assign Prefab
+            if (zoneValue < 0.25f)          // Plain
                 prefabToSpawn = _tiles[0];
-            else if (zoneValue < 0.5f) // Plaines ou forêts
+            else if (zoneValue < 0.5f)      // Forest
                 prefabToSpawn = _tiles[1];
-            else if (zoneValue < 0.75f) // Montagnes
+            else if (zoneValue < 0.75f)     // Mine
                 prefabToSpawn = _tiles[2];
-            else // Sommets enneigés
+            else                            // Bush
                 prefabToSpawn = _tiles[3];
             //GameObject obj = PrefabUtility.InstantiatePrefab(prefab, position + new Vector3(0,noiseValue*5,0), Quaternion.identity, this.transform);
             GameObject obj = PrefabUtility.InstantiatePrefab(prefabToSpawn, this.transform) as GameObject;
+            Debug.Log($"Instanciated {prefabToSpawn.name}");
             obj.transform.position = position;
             Renderer renderer = obj.GetComponent<Renderer>();
             noiseValue = Mathf.Clamp01(noiseValue);
@@ -133,6 +138,8 @@ public class GridMakerEditor : MonoBehaviour
         }
         //NavMeshSurface navMeshSurface = this.gameObject.AddComponent<NavMeshSurface>();
         //navMeshBaker.GenerateNavMesh(navMeshSurface);
+
+        transform.localScale = currentScale;
     }
 
     Texture2D SpriteToTexture2D(Sprite sprite)
