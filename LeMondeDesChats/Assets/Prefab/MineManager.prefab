@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 577351807197456828}
   - component: {fileID: 5256435671217564881}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MineManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60,7 +60,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8153793488897378026}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4842283293547599987}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: target3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,7 +122,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6357262246008356335}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: target2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
