@@ -53,7 +53,7 @@ public class PerlinNoiseTexture : MonoBehaviour
         float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
         perlinValue = Mathf.Clamp01(perlinValue);
         //Debug.Log("dflmfd" + new Vector2(xCoord, yCoord)+ pos);
-        Debug.Log(perlinValue);
+        //Debug.Log(perlinValue);
         return perlinValue;
     }
 }

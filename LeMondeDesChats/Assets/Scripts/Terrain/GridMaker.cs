@@ -3,10 +3,11 @@ using Unity.AI.Navigation;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
+using UnityEngine.InputSystem.XR;
 
 public class GridMaker : MonoBehaviour
 {
-    private Vector2[] tilesPos;
+    public Vector2[] tilesPos;
     [SerializeField] private int row;
     [SerializeField] private GameObject prefab;
     private Vector2 initialPos;
@@ -15,6 +16,11 @@ public class GridMaker : MonoBehaviour
     private int index  = 0;
     private NavMeshBaker navMeshBaker;
     public PerlinNoiseTexture perlinNoiseTexture;
+
+    public AgentController controller;
+    public GridMaker gridMaker;
+    public Waypoint waypoint;
+    private NavMeshSurface navMeshSurface;
 
 
     private void Start()
@@ -92,7 +98,8 @@ public class GridMaker : MonoBehaviour
             //Debug.Log(noiseValue);
             //Debug.Log($"({xCoord - minX},{yCoord - minY})");
             Vector3 position = new Vector3(xCoord * Mathf.Sqrt(3) / 2, 0, yCoord * 1.5f);
-            GameObject obj = Instantiate(prefab, position + new Vector3(0,noiseValue*5,0), Quaternion.identity, this.transform);
+            GameObject obj = Instantiate(prefab, position + new Vector3(0,noiseValue*10,0), Quaternion.identity, this.transform);
+            obj.transform.localScale = new Vector3(1,1,1);
             Renderer renderer = obj.GetComponent<Renderer>();
             noiseValue = Mathf.Clamp01(noiseValue);
             //renderer.material.color = new Color(noiseValue, noiseValue, noiseValue);
@@ -107,8 +114,26 @@ public class GridMaker : MonoBehaviour
                 renderer.material.color = new Color(1f, 0f, 1f); // Blanc
 
         }
-        NavMeshSurface navMeshSurface = this.gameObject.AddComponent<NavMeshSurface>();
+
+
+        navMeshSurface = this.gameObject.AddComponent<NavMeshSurface>();
         navMeshBaker.GenerateNavMesh(navMeshSurface);
+
+
+        var transformArray = new Transform[gridMaker.tilesPos.Length];
+        for (int i = 0; i < gridMaker.tilesPos.Length; i++)
+        {
+            //Debug.Log(gridMaker.tilesPos[i].y);
+            GameObject temp = new GameObject($"Transform_{i}");
+            transformArray[i] = temp.transform;
+            transformArray[i].position = new Vector3(gridMaker.tilesPos[i].x, 0, gridMaker.tilesPos[i].y);
+            Destroy(temp);
+
+
+        }
+        //waypoint.transform.position = transformArray[controller.currentWaypointIndex].position;
+        controller.SetNextWaypoint(transformArray);
+        
     }
 }
  
