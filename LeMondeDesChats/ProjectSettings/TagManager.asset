@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - FoodWaypoint
+  - RestWaypoint
+  - MineWaypoint
+  - ForestWaypoint
+  - BushWaypoint
   layers:
   - Default
   - TransparentFX
@@ -12,9 +17,9 @@ TagManager:
   - Water
   - UI
   - Tile
-  - 
-  - 
-  - 
+  - WorkWaypoint
+  - FoodWaypoint
+  - RestWaypoint
   - 
   - 
   - 
