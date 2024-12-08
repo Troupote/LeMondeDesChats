@@ -37,9 +37,14 @@ public class AiController : MonoBehaviour
 
     public int age = 0; // Âge de l'individu en jours
 
-    void Start()
+    // Déplacer l'initialisation de 'agent' dans Awake()
+    void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+    }
+
+    void Start()
+    {
         Initialize();
     }
 
