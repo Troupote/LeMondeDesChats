@@ -14,8 +14,11 @@ public class AiController : MonoBehaviour
     [SerializeField]
     private LayerMask ressourceLayer;
 
+    [SerializeField]
     private List<Transform> workWaypoints = new List<Transform>();
+    [SerializeField]
     private List<Transform> foodWaypoints = new List<Transform>();
+    [SerializeField] 
     private List<Transform> restWaypoints = new List<Transform>();
 
     private enum AiState
@@ -29,13 +32,26 @@ public class AiController : MonoBehaviour
 
     [SerializeField]
     private float dureeEtat = 10f; // Durée de chaque état en secondes
+    [SerializeField]
+    private float variationEtat = 2f; // Variation aléatoire de la durée de l'état
     private float tempsEcoule;
 
     public float fatigue;
-    private const float fatigueMax = 100f;         // Seuil maximal de fatigue
-    private const float fatigueParSeconde = 5f;    // Fatigue accumulée par seconde
+    private const float fatigueMax = 100f;          // Seuil maximal de fatigue
+    private const float fatigueParSeconde = 0.8f;   // Fatigue accumulée par seconde
 
     public int age = 0; // Âge de l'individu en jours
+
+    // Nouveau : Type de ressource produit par l'agent
+    private enum ResourceType
+    {
+        Bois,
+        Pierre,
+        Nourriture
+    }
+
+    [SerializeField]
+    private ResourceType resourceType;
 
     // Déplacer l'initialisation de 'agent' dans Awake()
     void Awake()
@@ -50,6 +66,28 @@ public class AiController : MonoBehaviour
 
     public void Initialize()
     {
+        // Déterminer le type de ressource en fonction du tag
+        switch (TagOfWork.stringTag)
+        {
+            case "ForestWaypoint":
+                resourceType = ResourceType.Bois;
+                break;
+            case "MineWaypoint":
+                resourceType = ResourceType.Pierre;
+                break;
+            case "BushWaypoint":
+                resourceType = ResourceType.Nourriture;
+                break;
+            case "PlainWaypoint":
+                break;
+            case "RestWaypoint":
+                break;
+            default:
+                resourceType = ResourceType.Bois;
+                Debug.LogWarning("TagOfWork inconnu. Défaut à Bois.");
+                break;
+        }
+
         // Trouver les waypoints en fonction des tags
         var workWaypointObjects = GameObject.FindGameObjectsWithTag(TagOfWork.stringTag);
         var foodWaypointObjects = GameObject.FindGameObjectsWithTag("FoodWaypoint");
@@ -71,7 +109,7 @@ public class AiController : MonoBehaviour
         }
 
         etatActuel = AiState.Travail;
-        tempsEcoule = Random.Range(0f, dureeEtat);
+        tempsEcoule = Random.Range(0f, dureeEtat + Random.Range(-variationEtat, variationEtat));
         fatigue = 0f; // Initialiser la fatigue à 0
         DefinirDestination();
 
@@ -95,18 +133,44 @@ public class AiController : MonoBehaviour
         }
 
         // Vérifier si l'agent est fatigué
-        if (fatigue >= fatigueMax && etatActuel != AiState.Repos)
+        if (fatigue >= fatigueMax && etatActuel != AiState.Nourriture)
         {
-            etatActuel = AiState.Repos;
+            etatActuel = AiState.Nourriture;
             tempsEcoule = 0f; // Réinitialiser le temps écoulé pour le nouvel état
             DefinirDestination();
             return;
         }
 
-        if (tempsEcoule >= dureeEtat)
+        if (tempsEcoule >= dureeEtat + Random.Range(-variationEtat, variationEtat))
         {
             tempsEcoule = 0f;
             etatActuel = ObtenirEtatSuivant(etatActuel);
+            DefinirDestination();
+        }
+
+        // Ajouter des ressources lors de l'accomplissement des états de Travail
+        if (etatActuel == AiState.Travail && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+        {
+            switch (resourceType)
+            {
+                case ResourceType.Bois:
+                    RessourcesGlobales.Instance.AjouterBois(1); // Ajoute 1 bois
+                    break;
+                case ResourceType.Pierre:
+                    RessourcesGlobales.Instance.AjouterPierre(1); // Ajoute 1 pierre
+                    break;
+                case ResourceType.Nourriture:
+                    RessourcesGlobales.Instance.AjouterNourriture(1); // Ajoute 1 nourriture
+                    break;
+            }
+        }
+
+        // Consommer de la nourriture si en état Nourriture et arrivé à destination
+        if (etatActuel == AiState.Nourriture && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+        {
+            RessourcesGlobales.Instance.AjouterNourriture(-1); // Consomme 1 nourriture
+            fatigue = 0f; // Réinitialiser la fatigue après avoir mangé
+            etatActuel = AiState.Travail; // Revenir au travail
             DefinirDestination();
         }
     }
@@ -116,22 +180,12 @@ public class AiController : MonoBehaviour
         switch (etatActuel)
         {
             case AiState.Travail:
-                return AiState.Nourriture;
-
+                return AiState.Travail; // Continue à travailler
             case AiState.Nourriture:
-                if (fatigue >= fatigueMax)
-                {
-                    return AiState.Repos;
-                }
-                else
-                {
-                    return AiState.Travail;
-                }
-
+                return AiState.Travail; // Retour au travail après avoir mangé
             case AiState.Repos:
                 fatigue = 0f;
-                return AiState.Nourriture;
-
+                return AiState.Travail;
             default:
                 return AiState.Travail;
         }
@@ -139,13 +193,15 @@ public class AiController : MonoBehaviour
 
     void DefinirDestination()
     {
+        Vector3 randomOffset = Vector3.zero;
         switch (etatActuel)
         {
             case AiState.Travail:
                 if (workWaypoints.Count > 0)
                 {
                     int index = Random.Range(0, workWaypoints.Count);
-                    agent.SetDestination(workWaypoints[index].position);
+                    randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+                    agent.SetDestination(workWaypoints[index].position + randomOffset);
                 }
                 break;
 
@@ -153,7 +209,8 @@ public class AiController : MonoBehaviour
                 if (foodWaypoints.Count > 0)
                 {
                     int index = Random.Range(0, foodWaypoints.Count);
-                    agent.SetDestination(foodWaypoints[index].position);
+                    randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+                    agent.SetDestination(foodWaypoints[index].position + randomOffset);
                 }
                 break;
 
@@ -161,7 +218,8 @@ public class AiController : MonoBehaviour
                 if (restWaypoints.Count > 0)
                 {
                     int index = Random.Range(0, restWaypoints.Count);
-                    agent.SetDestination(restWaypoints[index].position);
+                    randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+                    agent.SetDestination(restWaypoints[index].position + randomOffset);
                 }
                 break;
         }
