@@ -99,7 +99,7 @@ public class GridMaker : MonoBehaviour
             //Debug.Log($"({xCoord - minX},{yCoord - minY})");
             Vector3 position = new Vector3(xCoord * Mathf.Sqrt(3) / 2, 0, yCoord * 1.5f);
             GameObject obj = Instantiate(prefab, position + new Vector3(0,noiseValue*10,0), Quaternion.identity, this.transform);
-            obj.transform.localScale = new Vector3(1,1,1);
+            //obj.transform.localScale = new Vector3(1,1,1);
             Renderer renderer = obj.GetComponent<Renderer>();
             noiseValue = Mathf.Clamp01(noiseValue);
             //renderer.material.color = new Color(noiseValue, noiseValue, noiseValue);
