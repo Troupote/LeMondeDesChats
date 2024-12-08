@@ -9,7 +9,7 @@ public class AiSelector : MonoBehaviour
     [SerializeField] private Material outline;
     private MeshRenderer oldRenderer;
     [SerializeField] private GameObject IaPanel;
-    [SerializeField] private TMP_Text schoolText;
+    [SerializeField] public TMP_Text schoolText;
 
     public void ApplyOutiline(GameObject obj)
     {
@@ -28,6 +28,6 @@ public class AiSelector : MonoBehaviour
     {
         IaPanel.SetActive(true);
         var controller = obj.GetComponent<AiController>();
-        schoolText.text = $"{controller.tag} goes to School";
+        schoolText.text = $"{controller.tag} goes to School to become : Builder";
     }
 }
