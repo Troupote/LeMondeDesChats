@@ -21,11 +21,16 @@ public class AiController : MonoBehaviour
     [SerializeField]
     private List<Transform> restWaypoints = new List<Transform>();
 
+    // #
+    [SerializeField]
+    private List<Transform> wandererWaypoints = new List<Transform>();
+
     private enum AiState
     {
         Travail,
         Nourriture,
-        Repos
+        Repos,
+        Wanderer // #
     }
 
     private AiState etatActuel;
@@ -84,6 +89,8 @@ public class AiController : MonoBehaviour
                 break;
             case "RestWaypoint":
                 break;
+            case "WandererWaypoint":
+                break;
             default:
                 resourceType = ResourceType.Bois;
                 Debug.LogWarning("TagOfWork inconnu. Défaut à Bois.");
@@ -94,6 +101,9 @@ public class AiController : MonoBehaviour
         var workWaypointObjects = GameObject.FindGameObjectsWithTag(TagOfWork.stringTag);
         var foodWaypointObjects = GameObject.FindGameObjectsWithTag("FoodWaypoint");
         var restWaypointObjects = GameObject.FindGameObjectsWithTag("RestWaypoint");
+
+        // #
+        var wandererWaypointsObjects = GameObject.FindGameObjectsWithTag("WandererWaypoint");
 
         foreach (var obj in workWaypointObjects)
         {
@@ -110,7 +120,16 @@ public class AiController : MonoBehaviour
             restWaypoints.Add(obj.transform);
         }
 
-        etatActuel = AiState.Travail;
+        // #
+        foreach (var obj in wandererWaypointsObjects)
+        {
+            wandererWaypoints.Add(obj.transform);
+        }
+
+        //#
+        etatActuel = TagOfWork.stringTag == "WandererWaypoint" ? AiState.Wanderer : AiState.Travail;
+
+
         tempsEcoule = Random.Range(0f, dureeEtat + Random.Range(-variationEtat, variationEtat));
         fatigue = 0f; // Initialiser la fatigue à 0
         resourceCollected = false; // Initialiser le flag
@@ -133,6 +152,11 @@ public class AiController : MonoBehaviour
         {
             fatigue += fatigueParSeconde * Time.deltaTime;
             fatigue = Mathf.Min(fatigue, fatigueMax); // Limiter la fatigue au maximum
+        }
+
+        if (etatActuel == AiState.Wanderer) // #
+        {
+
         }
 
         // Vérifier si l'agent est fatigué
@@ -196,6 +220,8 @@ public class AiController : MonoBehaviour
                 return AiState.Travail; // Continue à travailler
             case AiState.Nourriture:
                 return AiState.Travail; // Retour au travail après avoir mangé
+            case AiState.Wanderer:
+                return AiState.Wanderer;
             case AiState.Repos:
                 fatigue = 0f;
                 return AiState.Travail;
@@ -223,6 +249,16 @@ public class AiController : MonoBehaviour
             case AiState.Repos:
                 waypoints = restWaypoints;
                 break;
+
+            case AiState.Wanderer: // #
+                if (wandererWaypoints.Count > 0)
+                {
+                    int index = Random.Range(0, wandererWaypoints.Count);
+                    randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+                    agent.SetDestination(wandererWaypoints[index].position + randomOffset);
+                }
+                break;
+
         }
 
         foreach (var waypoint in waypoints)

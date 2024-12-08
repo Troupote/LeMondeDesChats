@@ -14,10 +14,19 @@ public class TimeManager : MonoBehaviour
     public GameObject individualPrefab; // Prefab de l'agent AI
     private List<AiController> individuals = new List<AiController>();
 
+    [SerializeField]
+    private CanvasManager canvasManager;
+
+    private void Start()
+    {
+        canvasManager.timeSlider.maxValue = dayDuration;
+    }
     void Update()
     {
         // Gestion du temps de la journée
         dayTimer += Time.deltaTime;
+        canvasManager.updateTimeSlider(dayTimer);
+
         if (dayTimer >= dayDuration)
         {
             dayTimer = 0f;

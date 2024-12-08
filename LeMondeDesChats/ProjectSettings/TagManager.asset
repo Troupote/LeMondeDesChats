@@ -9,6 +9,7 @@ TagManager:
   - MineWaypoint
   - ForestWaypoint
   - BushWaypoint
+  - WandererWaypoint
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - WorkWaypoint
   - FoodWaypoint
   - RestWaypoint
-  - 
+  - WandererWaypoint
   - 
   - 
   - 
