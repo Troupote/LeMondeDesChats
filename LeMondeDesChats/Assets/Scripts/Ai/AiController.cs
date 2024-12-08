@@ -18,7 +18,7 @@ public class AiController : MonoBehaviour
     private List<Transform> workWaypoints = new List<Transform>();
     [SerializeField]
     private List<Transform> foodWaypoints = new List<Transform>();
-    [SerializeField] 
+    [SerializeField]
     private List<Transform> restWaypoints = new List<Transform>();
 
     private enum AiState
@@ -42,7 +42,7 @@ public class AiController : MonoBehaviour
 
     public int age = 0; // Âge de l'individu en jours
 
-    // Nouveau : Type de ressource produit par l'agent
+    // Type de ressource produit par l'agent
     private enum ResourceType
     {
         Bois,
@@ -53,7 +53,9 @@ public class AiController : MonoBehaviour
     [SerializeField]
     private ResourceType resourceType;
 
-    // Déplacer l'initialisation de 'agent' dans Awake()
+    // Nouveau : Flag pour éviter la production multiple de ressources
+    private bool resourceCollected = false;
+
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -111,6 +113,7 @@ public class AiController : MonoBehaviour
         etatActuel = AiState.Travail;
         tempsEcoule = Random.Range(0f, dureeEtat + Random.Range(-variationEtat, variationEtat));
         fatigue = 0f; // Initialiser la fatigue à 0
+        resourceCollected = false; // Initialiser le flag
         DefinirDestination();
 
         // Enregistrer cet individu auprès du TimeManager
@@ -125,7 +128,7 @@ public class AiController : MonoBehaviour
     {
         tempsEcoule += Time.deltaTime;
 
-        // Augmenter la fatigue lorsque l'agent travaille ou se déplace
+        // Augmenter la fatigue lorsque l'agent travaille ou cherche de la nourriture
         if (etatActuel == AiState.Travail || etatActuel == AiState.Nourriture)
         {
             fatigue += fatigueParSeconde * Time.deltaTime;
@@ -137,6 +140,7 @@ public class AiController : MonoBehaviour
         {
             etatActuel = AiState.Nourriture;
             tempsEcoule = 0f; // Réinitialiser le temps écoulé pour le nouvel état
+            resourceCollected = false; // Réinitialiser le flag
             DefinirDestination();
             return;
         }
@@ -145,33 +149,42 @@ public class AiController : MonoBehaviour
         {
             tempsEcoule = 0f;
             etatActuel = ObtenirEtatSuivant(etatActuel);
+            resourceCollected = false; // Réinitialiser le flag lors du changement d'état
             DefinirDestination();
         }
 
-        // Ajouter des ressources lors de l'accomplissement des états de Travail
+        // Ajouter des ressources lors de l'accomplissement de l'état Travail
         if (etatActuel == AiState.Travail && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
         {
-            switch (resourceType)
+            if (!resourceCollected)
             {
-                case ResourceType.Bois:
-                    RessourcesGlobales.Instance.AjouterBois(1); // Ajoute 1 bois
-                    break;
-                case ResourceType.Pierre:
-                    RessourcesGlobales.Instance.AjouterPierre(1); // Ajoute 1 pierre
-                    break;
-                case ResourceType.Nourriture:
-                    RessourcesGlobales.Instance.AjouterNourriture(1); // Ajoute 1 nourriture
-                    break;
+                switch (resourceType)
+                {
+                    case ResourceType.Bois:
+                        RessourcesGlobales.Instance.AjouterBois(1); // Ajoute 1 bois
+                        break;
+                    case ResourceType.Pierre:
+                        RessourcesGlobales.Instance.AjouterPierre(1); // Ajoute 1 pierre
+                        break;
+                    case ResourceType.Nourriture:
+                        RessourcesGlobales.Instance.AjouterNourriture(1); // Ajoute 1 nourriture
+                        break;
+                }
+                resourceCollected = true; // Marquer comme collecté
             }
         }
 
         // Consommer de la nourriture si en état Nourriture et arrivé à destination
         if (etatActuel == AiState.Nourriture && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
         {
-            RessourcesGlobales.Instance.AjouterNourriture(-1); // Consomme 1 nourriture
-            fatigue = 0f; // Réinitialiser la fatigue après avoir mangé
-            etatActuel = AiState.Travail; // Revenir au travail
-            DefinirDestination();
+            if (!resourceCollected)
+            {
+                RessourcesGlobales.Instance.AjouterNourriture(-1); // Consomme 1 nourriture
+                fatigue = 0f; // Réinitialiser la fatigue après avoir mangé
+                etatActuel = AiState.Travail; // Revenir au travail
+                resourceCollected = true; // Marquer comme consommé
+                DefinirDestination();
+            }
         }
     }
 
