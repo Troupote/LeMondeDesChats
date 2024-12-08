@@ -206,35 +206,38 @@ public class AiController : MonoBehaviour
 
     void DefinirDestination()
     {
-        Vector3 randomOffset = Vector3.zero;
+        Vector3 randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+        Transform closestWaypoint = null;
+        float closestDistance = Mathf.Infinity;
+
+        List<Transform> waypoints = new List<Transform>();
+
         switch (etatActuel)
         {
             case AiState.Travail:
-                if (workWaypoints.Count > 0)
-                {
-                    int index = Random.Range(0, workWaypoints.Count);
-                    randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
-                    agent.SetDestination(workWaypoints[index].position + randomOffset);
-                }
+                waypoints = workWaypoints;
                 break;
-
             case AiState.Nourriture:
-                if (foodWaypoints.Count > 0)
-                {
-                    int index = Random.Range(0, foodWaypoints.Count);
-                    randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
-                    agent.SetDestination(foodWaypoints[index].position + randomOffset);
-                }
+                waypoints = foodWaypoints;
                 break;
-
             case AiState.Repos:
-                if (restWaypoints.Count > 0)
-                {
-                    int index = Random.Range(0, restWaypoints.Count);
-                    randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
-                    agent.SetDestination(restWaypoints[index].position + randomOffset);
-                }
+                waypoints = restWaypoints;
                 break;
+        }
+
+        foreach (var waypoint in waypoints)
+        {
+            float distance = Vector3.Distance(transform.position, waypoint.position + randomOffset);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestWaypoint = waypoint;
+            }
+        }
+
+        if (closestWaypoint != null)
+        {
+            agent.SetDestination(closestWaypoint.position + randomOffset);
         }
     }
 
