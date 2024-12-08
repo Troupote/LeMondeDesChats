@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5256435671217564881}
   m_Layer: 7
   m_Name: MineManager
-  m_TagString: Untagged
+  m_TagString: MineWaypoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
