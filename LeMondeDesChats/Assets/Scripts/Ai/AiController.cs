@@ -154,10 +154,12 @@ public class AiController : MonoBehaviour
             fatigue = Mathf.Min(fatigue, fatigueMax); // Limiter la fatigue au maximum
         }
 
-        if (etatActuel == AiState.Wanderer) // #
-        {
-
-        }
+        // Supprimer l'appel constant à DefinirDestination() pour l'état Wanderer
+        // Cela évite de réinitialiser la destination à chaque frame
+        //if (etatActuel == AiState.Wanderer)
+        //{
+        //    DefinirDestination();
+        //}
 
         // Vérifier si l'agent est fatigué
         if (fatigue >= fatigueMax && etatActuel != AiState.Nourriture)
@@ -210,32 +212,17 @@ public class AiController : MonoBehaviour
                 DefinirDestination();
             }
         }
-    }
 
-    AiState ObtenirEtatSuivant(AiState etatActuel)
-    {
-        switch (etatActuel)
+        // Gérer le mouvement du Wanderer lorsqu'il atteint sa destination
+        if (etatActuel == AiState.Wanderer && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
         {
-            case AiState.Travail:
-                return AiState.Travail; // Continue à travailler
-            case AiState.Nourriture:
-                return AiState.Travail; // Retour au travail après avoir mangé
-            case AiState.Wanderer:
-                return AiState.Wanderer;
-            case AiState.Repos:
-                fatigue = 0f;
-                return AiState.Travail;
-            default:
-                return AiState.Travail;
+            DefinirDestination();
         }
     }
 
     void DefinirDestination()
     {
         Vector3 randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
-        Transform closestWaypoint = null;
-        float closestDistance = Mathf.Infinity;
-
         List<Transform> waypoints = new List<Transform>();
 
         switch (etatActuel)
@@ -249,34 +236,50 @@ public class AiController : MonoBehaviour
             case AiState.Repos:
                 waypoints = restWaypoints;
                 break;
-
-            case AiState.Wanderer: // #
-                if (wandererWaypoints.Count > 0)
-                {
-                    int index = Random.Range(0, wandererWaypoints.Count);
-                    randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
-                    agent.SetDestination(wandererWaypoints[index].position + randomOffset);
-                }
+            case AiState.Wanderer:
+                waypoints = wandererWaypoints;
                 break;
-
         }
 
-        foreach (var waypoint in waypoints)
+        if (waypoints.Count == 0)
         {
-            float distance = Vector3.Distance(transform.position, waypoint.position + randomOffset);
-            if (distance < closestDistance)
+            Debug.LogWarning("Aucun waypoint trouvé pour l'état " + etatActuel);
+            return;
+        }
+
+        if (etatActuel == AiState.Wanderer)
+        {
+            // Choisir un waypoint aléatoire pour le Wanderer
+            int index = Random.Range(0, waypoints.Count);
+            agent.SetDestination(waypoints[index].position + randomOffset);
+        }
+        else
+        {
+            // Trouver le waypoint le plus proche
+            Transform closestWaypoint = null;
+            float closestDistance = Mathf.Infinity;
+
+            foreach (var waypoint in waypoints)
             {
-                closestDistance = distance;
-                closestWaypoint = waypoint;
+                float distance = Vector3.Distance(transform.position, waypoint.position + randomOffset);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestWaypoint = waypoint;
+                }
+            }
+
+            if (closestWaypoint != null)
+            {
+                agent.SetDestination(closestWaypoint.position + randomOffset);
+            }
+            else
+            {
+                Debug.LogWarning("Impossible de trouver un waypoint pour l'état " + etatActuel);
+                agent.SetDestination(transform.position); // Ne pas bouger
             }
         }
-
-        if (closestWaypoint != null)
-        {
-            agent.SetDestination(closestWaypoint.position + randomOffset);
-        }
     }
-
     public void AgeOneDay()
     {
         age++;
@@ -291,6 +294,22 @@ public class AiController : MonoBehaviour
         if (timeManager != null)
         {
             timeManager.UnregisterIndividual(this);
+        }
+    }
+    private AiState ObtenirEtatSuivant(AiState etatActuel)
+    {
+        switch (etatActuel)
+        {
+            case AiState.Travail:
+                return AiState.Travail;
+            case AiState.Repos:
+                return AiState.Nourriture;
+            case AiState.Nourriture:
+                return AiState.Travail;
+            case AiState.Wanderer:
+                return AiState.Wanderer; // Wanderer reste dans le même état
+            default:
+                return AiState.Travail;
         }
     }
 }

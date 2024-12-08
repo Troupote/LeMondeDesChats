@@ -12,11 +12,6 @@ public class PerlinNoiseTexture : MonoBehaviour
 
     public Image image;
 
-    void Start()
-    {
-
-    }
-
     public void CreateTexture(float zoom, Vector2 offset,List<Vector2> colorValues)
     {
         Texture2D texture = GeneratePerlinNoiseTexture(colorValues);
