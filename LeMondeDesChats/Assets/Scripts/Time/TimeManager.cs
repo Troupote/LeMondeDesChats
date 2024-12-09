@@ -8,6 +8,8 @@ public class TimeManager : MonoBehaviour
     private float dayTimer = 0f;
     public int currentDay = 0;
 
+    public float timeScale; // #
+
     [Header("Population Settings")]
     public float spawnInterval = 30f; // Intervalle pour l'ajout de nouveaux individus
     private float spawnTimer = 0f;
@@ -26,6 +28,7 @@ public class TimeManager : MonoBehaviour
     private void Start()
     {
         canvasManager.timeSlider.maxValue = dayDuration;
+        Time.timeScale = timeScale;
     }
 
     void Update()
@@ -160,12 +163,12 @@ public class TimeManager : MonoBehaviour
 
     }
 
-    public void ResumeTime()
+   /* public void ResumeTime()
     {
         isTimePaused = false;
         Time.timeScale = 1f;
 
         // Notifier les agents AI
         OnTimePause?.Invoke(false);
-    }
+    }*/
 }
