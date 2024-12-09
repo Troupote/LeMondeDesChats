@@ -69,8 +69,11 @@ public class BuildManager : MonoBehaviour
 
     private void Update()
     {
-        foreach (var button in _buildButtons)
-            button.Update();
+        if (_buildButtons != null && _buildButtons.Count > 0)
+        {
+            foreach (var button in _buildButtons)
+                button.Update();
+        }
     }
 
     private void LateUpdate()
