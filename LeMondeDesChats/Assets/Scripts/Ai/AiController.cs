@@ -341,9 +341,15 @@ public class AiController : MonoBehaviour
     public void AgeOneDay()
     {
         age++;
-        if (age == 10)
+        if (age == 5)
         {
             Destroy(gameObject);
+            RessourcesGlobales.Instance.RegisterVillagerAlive(-1);
+            if(this.gameObject.tag == "Builder")
+            {
+                RessourcesGlobales.Instance.RegisterBuilderAlive(-1);
+            }
+                
         }
 
         Debug.Log(gameObject.name + " a maintenant " + age + " jours.");
@@ -354,6 +360,7 @@ public class AiController : MonoBehaviour
     {
         // Se désenregistrer du TimeManager lorsque l'agent est détruit
         TimeManager timeManager = FindObjectOfType<TimeManager>();
+
         if (timeManager != null)
         {
             timeManager.UnregisterIndividual(this);

@@ -147,6 +147,12 @@ public class TimeManager : MonoBehaviour
         Quaternion spawnRotation = Quaternion.identity;
 
         GameObject newIndividual = Instantiate(individualPrefab, spawnPosition, spawnRotation);
+        RessourcesGlobales.Instance.RegisterVillagerAlive(1);
+        if (newIndividual.tag == "Builder")
+        {
+            RessourcesGlobales.Instance.RegisterBuilderAlive(1);
+        }
+            
 
         // Ajouter le nouvel individu � la liste
         AiController aiController = newIndividual.GetComponent<AiController>();

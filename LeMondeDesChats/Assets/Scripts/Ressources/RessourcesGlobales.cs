@@ -8,6 +8,9 @@ public class RessourcesGlobales : MonoBehaviour
 
     public int properityValue;
     public int prosperityMax;
+
+    public int nbrVillager = 0;
+    public int nbrBuilder = 0;
     [field: SerializeField] public int bois { get; private set; } = 0;
     [field: SerializeField] public int pierre { get; private set; } = 0;
 
@@ -24,6 +27,22 @@ public class RessourcesGlobales : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public void RegisterVillagerAlive(int value)
+    {
+        nbrVillager += value;
+        if(nbrVillager <= 0)
+        {
+            canvasManager?.EndGame(false);
+        }
+    }
+
+    public void RegisterBuilderAlive(int value)
+    {
+        nbrBuilder += value;
+        canvasManager?.updateBuilderText(nbrBuilder);
+        Debug.Log("FJGKLFJG");
     }
 
     public void AjouterNourriture(int quantite)
@@ -51,9 +70,10 @@ public class RessourcesGlobales : MonoBehaviour
         {
             properityValue = 0;
         }
-        else if(properityValue > 100)
+        else if(properityValue >= 100)
         {
             properityValue = 100;
+            canvasManager?.EndGame(true);
         }
         canvasManager?.updateProperityGauge(properityValue);
     }

@@ -22,7 +22,10 @@ public class GeneratorScript : MonoBehaviour
                 transform.position.y,
                 transform.position.z + Random.Range(-5.0f, 5.0f)
             );
-            Instantiate(entityPrefab[randomIndex], randomPosition, Quaternion.identity, gameObject.transform).GetComponent<NavMeshAgent>();
+            var obj = Instantiate(entityPrefab[randomIndex], randomPosition, Quaternion.identity, gameObject.transform).GetComponent<NavMeshAgent>();
+            RessourcesGlobales.Instance.RegisterVillagerAlive(1);
+            if (obj.tag == "Builder")
+                RessourcesGlobales.Instance.RegisterBuilderAlive(1);
         }
     }
 }

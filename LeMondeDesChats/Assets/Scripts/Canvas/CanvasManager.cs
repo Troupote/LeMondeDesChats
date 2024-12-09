@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 
 public class CanvasManager : MonoBehaviour
@@ -16,9 +17,21 @@ public class CanvasManager : MonoBehaviour
     [SerializeField]
     private TMP_Text stoneText;
 
+    [SerializeField]
+    private TMP_Text builderText;
+
     public Slider timeSlider;
 
     public Slider prosperityGauge;
+
+    [SerializeField]
+    private GameObject GameOverPanel;
+
+
+    [SerializeField]
+    private TMP_Text textGameOver;
+    [SerializeField]
+    private GameObject GamePanel;
 
     private void Start()
     {
@@ -45,10 +58,27 @@ public class CanvasManager : MonoBehaviour
     {
         timeSlider.value = value;
     }
+    public void updateBuilderText(int value)
+    {
+        builderText.text = $"Remaining builders : {value}";
+    }
+
 
 
     public void updateProperityGauge(float value)
     {
         prosperityGauge.value = value;
+    }
+
+    public void EndGame(bool IsWon)
+    {
+        GameOverPanel.SetActive(true);
+        GamePanel.SetActive(false);
+        textGameOver.text = IsWon == true ? "GAME OVER" : "GG";
+    }
+
+    public void Retry()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
