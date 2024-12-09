@@ -5,6 +5,9 @@ public class RessourcesGlobales : MonoBehaviour
     public static RessourcesGlobales Instance;
 
     public int nourriture = 0;
+
+    public int properityValue;
+    public int prosperityMax;
     [field: SerializeField] public int bois { get; private set; } = 0;
     [field: SerializeField] public int pierre { get; private set; } = 0;
 
@@ -38,6 +41,13 @@ public class RessourcesGlobales : MonoBehaviour
     public void AjouterPierre(int quantite)
     {
         pierre += quantite;
+        canvasManager?.updateStoneText(nourriture);
+    }
+
+    public void AddProsperity(int quantite)
+    {
+        properityValue += quantite;
+        canvasManager?.updateProperityGauge(properityValue);
     }
 
     public static bool IsRessourcesAvailable(BuildingSO SO) => Instance.bois >= SO.Wood && Instance.pierre >= SO.Stone;
@@ -52,5 +62,6 @@ public class RessourcesGlobales : MonoBehaviour
     {
         Instance.bois -= SO.Wood;
         Instance.pierre -= SO.Stone;
+        Instance.AddProsperity(10);
     }
 }
