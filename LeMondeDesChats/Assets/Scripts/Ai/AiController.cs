@@ -153,8 +153,30 @@ public class AiController : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        TimeManager.OnTimePause += HandleTimePause;
+    }
+
+    void OnDisable()
+    {
+        TimeManager.OnTimePause -= HandleTimePause;
+    }
+
+    private bool isPaused = false;
+    private void HandleTimePause(bool paused)
+    {
+        isPaused = paused;
+        if (agent != null)
+        {
+            agent.isStopped = isPaused;
+        }
+    }
     void Update()
     {
+        if (isPaused)
+            return;
+
         tempsEcoule += Time.deltaTime;
 
         // Augmenter la fatigue lorsque l'agent travaille ou cherche de la nourriture
