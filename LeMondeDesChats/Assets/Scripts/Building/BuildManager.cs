@@ -16,9 +16,12 @@ public class BuildManager : MonoBehaviour
     [SerializeField] private GameObject _buttonPrefab;
     [SerializeField] private BuildingSO[] _buildings;
     [SerializeField] private Transform _content;
+    [SerializeField] private Tag _builderTag;
     [SerializeField] private bool _deactivateBuilding = true;
 
     private List<BuildButton> _buildButtons;
+    private AiController[] _builders;
+    private bool _hasEnoughBuilderComputed;
 
     struct BuildButton
     {
@@ -70,6 +73,11 @@ public class BuildManager : MonoBehaviour
             button.Update();
     }
 
+    private void LateUpdate()
+    {
+        _hasEnoughBuilderComputed = false;
+    }
+
     public void StartBuilding(BuildingSO SO)
     {
         IsBuilding = true;
@@ -86,15 +94,49 @@ public class BuildManager : MonoBehaviour
     {
         if (IsBuilding
             && tile.CanBuild
-            && RessourcesGlobales.IsRessourcesAvailable(Building))
+            && RessourcesGlobales.IsRessourcesAvailable(Building)
+            && HasEnoughBuilder(Building, out var builders))
         {
-            // Navmesh to build
-
-            tile.SetBuilding(Instantiate(Building.Prefab, tile.transform));
-            RessourcesGlobales.UseRessources(Building);
+            Instance.StartCoroutine(Coroutine_StartBuilding(tile, Building, builders));
 
             if (Instance._deactivateBuilding)
                 Instance.StopBuilding();
         }
     }
+
+    private static IEnumerator Coroutine_StartBuilding(Tile tile, BuildingSO SO, AiController[] builders)
+    {
+        var building = Instantiate(SO.Prefab, tile.transform);
+        building.SetActive(false);
+        tile.SetBuilding(building);
+
+        var currentBuilders = new List<AiController>();
+        for (int i = 0; i < SO.Worker; i++)
+        {
+            currentBuilders.Add(builders[i]);
+            builders[i].GoBuild(tile.transform);
+        }
+
+        yield return new WaitUntil(() => currentBuilders.All(x => x.IsAtWorkDestination()));
+
+        building.SetActive(true);
+        RessourcesGlobales.UseRessources(SO);
+
+        foreach (var builder in currentBuilders)
+            builder.EndBuild();
+    }
+
+    public static bool HasEnoughBuilder(BuildingSO SO, out AiController[] builders)
+    {
+        Instance._builders = GameObject.FindGameObjectsWithTag(Instance._builderTag)
+            .Select(x => x.GetComponent<AiController>())
+            .Where(y => y.etatActuel != AiController.AiState.Travail)
+            .ToArray();
+
+        // yeah optimisation, bottleneck (no), performance wasted, and all that... later
+        builders = Instance._builders;
+        return Instance._builders.Length >= SO.Worker;
+    }
+
+    public static bool HasEnoughBuilder(BuildingSO SO) => HasEnoughBuilder(SO, out AiController[] builders);
 }
