@@ -167,7 +167,7 @@ public class AiController : MonoBehaviour
         // Vérifier si l'agent est fatigué
         if (fatigue >= fatigueMax && etatActuel != AiState.Nourriture)
         {
-            RessourcesGlobales.Instance.AddProsperity(-1);
+            RessourcesGlobales.Instance.AddProsperity(-20);
             etatActuel = AiState.Nourriture;
             tempsEcoule = 0f; // Réinitialiser le temps écoulé pour le nouvel état
             resourceCollected = false; // Réinitialiser le flag
