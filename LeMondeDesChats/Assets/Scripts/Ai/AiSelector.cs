@@ -10,10 +10,12 @@ public class AiSelector : MonoBehaviour
     private MeshRenderer oldRenderer;
     [SerializeField] private GameObject IaPanel;
     [SerializeField] public TMP_Text schoolText;
+    [HideInInspector] public GameObject aiSelected;
 
-    public void ApplyOutiline(GameObject obj)
+    public void ApplyOutline(GameObject obj)
     {
         IaPanelSetup(obj);
+        aiSelected = obj;
         var meshRenderer = obj.GetComponent<MeshRenderer>();
         var Mats = new Material[2] { obj.GetComponent<MeshRenderer>().material , outline};
         if (oldRenderer != null)
@@ -30,4 +32,5 @@ public class AiSelector : MonoBehaviour
         var controller = obj.GetComponent<AiController>();
         schoolText.text = $"{controller.tag} goes to School to become : Builder";
     }
+
 }

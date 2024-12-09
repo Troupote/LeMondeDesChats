@@ -131,7 +131,9 @@ MonoBehaviour:
   workWaypoints: []
   foodWaypoints: []
   restWaypoints: []
+  schoolWaypoints: []
   wandererWaypoints: []
+  etatActuel: 0
   dureeEtat: 10
   variationEtat: 2
   fatigue: 0

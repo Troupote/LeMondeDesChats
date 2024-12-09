@@ -9,7 +9,7 @@ public class GetSelector : MonoBehaviour
     public void FindObject()
     {
         var obj = GameObject.Find("GetSelector");
-        obj.GetComponent<AiSelector>().ApplyOutiline(this.gameObject);
+        obj.GetComponent<AiSelector>().ApplyOutline(this.gameObject);
         Debug.Log("Apply");
     }
 
