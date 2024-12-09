@@ -1234,6 +1234,7 @@ GameObject:
   - component: {fileID: 8621378078176980132}
   - component: {fileID: 5245842664406648888}
   - component: {fileID: 5924995860416538552}
+  - component: {fileID: 758096248431842476}
   m_Layer: 5
   m_Name: School
   m_TagString: Untagged
@@ -1356,6 +1357,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &758096248431842476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2162897655322975602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dde2c763a7fa9c24db59935f19aae7cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BuildingSO: {fileID: 11400000, guid: bc045e3a5205b324a99a8e46ffcef373, type: 2}
 --- !u!1 &2299288968802532770
 GameObject:
   m_ObjectHideFlags: 0
@@ -1793,6 +1807,7 @@ GameObject:
   - component: {fileID: 7013799522349507531}
   - component: {fileID: 5397631697460440765}
   - component: {fileID: 193605588053099748}
+  - component: {fileID: 4377512324866724786}
   m_Layer: 5
   m_Name: Farm
   m_TagString: Untagged
@@ -1915,6 +1930,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &4377512324866724786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3004130067342000352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dde2c763a7fa9c24db59935f19aae7cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BuildingSO: {fileID: 11400000, guid: 54df91675ac60f3449869bbbad909bca, type: 2}
 --- !u!1 &3073780257383154096
 GameObject:
   m_ObjectHideFlags: 0
@@ -2084,6 +2112,7 @@ GameObject:
   - component: {fileID: 1506433274469883607}
   - component: {fileID: 8802398125903957168}
   - component: {fileID: 8193461330207490284}
+  - component: {fileID: 1428432873507538307}
   m_Layer: 5
   m_Name: Library
   m_TagString: Untagged
@@ -2206,6 +2235,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1428432873507538307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3461258425874977580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dde2c763a7fa9c24db59935f19aae7cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BuildingSO: {fileID: 11400000, guid: 31028b2d1d112134fa38f43cc94b36c3, type: 2}
 --- !u!1 &3655441944175095864
 GameObject:
   m_ObjectHideFlags: 0
@@ -2480,8 +2522,12 @@ MonoBehaviour:
   foodText: {fileID: 4329373710607036227}
   woodText: {fileID: 7686050124824639411}
   stoneText: {fileID: 186683170834047311}
+  builderText: {fileID: 0}
   timeSlider: {fileID: 8764596186966922559}
   prosperityGauge: {fileID: 3966373606215716162}
+  GameOverPanel: {fileID: 0}
+  textGameOver: {fileID: 0}
+  GamePanel: {fileID: 0}
 --- !u!1 &3864285716212027017
 GameObject:
   m_ObjectHideFlags: 0
@@ -3271,6 +3317,7 @@ GameObject:
   - component: {fileID: 5014257482835515862}
   - component: {fileID: 8421012607667528941}
   - component: {fileID: 6754682024676859403}
+  - component: {fileID: 3918990596296044060}
   m_Layer: 5
   m_Name: GridLayout
   m_TagString: Untagged
@@ -3364,6 +3411,24 @@ MonoBehaviour:
   m_Spacing: {x: 30, y: 10}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!114 &3918990596296044060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4275773913667151790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6de4e93b326413941b16f8799d64b2bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _buttonPrefab: {fileID: 0}
+  _buildings: []
+  _content: {fileID: 0}
+  _builderTag:
+    stringTag: Builder
+  _deactivateBuilding: 1
 --- !u!1 &4306273549306924893
 GameObject:
   m_ObjectHideFlags: 0
@@ -4412,6 +4477,7 @@ GameObject:
   - component: {fileID: 8066775668750447361}
   - component: {fileID: 4278901123138746358}
   - component: {fileID: 6463568520280043294}
+  - component: {fileID: 7419329325386764569}
   m_Layer: 5
   m_Name: Museum
   m_TagString: Untagged
@@ -4534,6 +4600,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7419329325386764569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5489639597841807950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dde2c763a7fa9c24db59935f19aae7cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BuildingSO: {fileID: 11400000, guid: 39bea0169d7b5e74aa7525955062ba4a, type: 2}
 --- !u!1 &5790449025490043655
 GameObject:
   m_ObjectHideFlags: 0
@@ -5490,6 +5569,7 @@ GameObject:
   - component: {fileID: 4325001342355306477}
   - component: {fileID: 3520446507765937531}
   - component: {fileID: 5610316339583900981}
+  - component: {fileID: 9148909288343422202}
   m_Layer: 5
   m_Name: House
   m_TagString: Untagged
@@ -5612,6 +5692,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &9148909288343422202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7261039112127174755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dde2c763a7fa9c24db59935f19aae7cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BuildingSO: {fileID: 11400000, guid: bbf71aa0da7b3f740bf912b1de09f147, type: 2}
 --- !u!1 &7271369445476237066
 GameObject:
   m_ObjectHideFlags: 0

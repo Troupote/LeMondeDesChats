@@ -217,8 +217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6de4e93b326413941b16f8799d64b2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buttonPrefab: {fileID: 3144865823837343, guid: 3de6ad78785f0314b894ec9a4d7b07b7,
-    type: 3}
+  _buttonPrefab: {fileID: 0}
   _buildings:
   - {fileID: 11400000, guid: bbf71aa0da7b3f740bf912b1de09f147, type: 2}
   - {fileID: 11400000, guid: bc045e3a5205b324a99a8e46ffcef373, type: 2}
