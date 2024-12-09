@@ -5,9 +5,8 @@ public class RessourcesGlobales : MonoBehaviour
     public static RessourcesGlobales Instance;
 
     public int nourriture = 0;
-    [SerializeField]
-    public int bois { get; private set; } = 0;
-    public int pierre = 0;
+    [field: SerializeField] public int bois { get; private set; } = 0;
+    [field: SerializeField] public int pierre { get; private set; } = 0;
 
     [SerializeField]
     private CanvasManager canvasManager;
@@ -27,17 +26,31 @@ public class RessourcesGlobales : MonoBehaviour
     public void AjouterNourriture(int quantite)
     {
         nourriture += quantite;
-        canvasManager.updatefoodText(nourriture);
+        canvasManager?.updatefoodText(nourriture);
     }
 
     public void AjouterBois(int quantite)
     {
         bois += quantite;
-        canvasManager.updateWoodText(bois);
+        canvasManager?.updateWoodText(bois);
     }
 
     public void AjouterPierre(int quantite)
     {
         pierre += quantite;
+    }
+
+    public static bool IsRessourcesAvailable(BuildingSO SO) => Instance.bois >= SO.Wood && Instance.pierre >= SO.Stone;
+
+    public static void UseRessources(int wood, int stone)
+    {
+        Instance.bois -= wood;
+        Instance.pierre -= stone;
+    }
+
+    public static void UseRessources(BuildingSO SO)
+    {
+        Instance.bois -= SO.Wood;
+        Instance.pierre -= SO.Stone;
     }
 }

@@ -35,13 +35,19 @@ public class BuildManager : MonoBehaviour
         Building = null;
     }
 
-    public static GameObject Build(Transform parent)
+    public static void TryBuild(Tile tile)
     {
-        GameObject newInstance = Instantiate(Building.Prefab, parent);
-        // consume resources
-        if (Instance._deactivateBuilding)
-            Instance.StopBuilding();
+        if (IsBuilding
+            && tile.CanBuild
+            && RessourcesGlobales.IsRessourcesAvailable(Building))
+        {
+            // Navmesh to build
 
-        return newInstance;
+            tile.SetBuilding(Instantiate(Building.Prefab, tile.transform));
+            RessourcesGlobales.UseRessources(Building);
+
+            if (Instance._deactivateBuilding)
+                Instance.StopBuilding();
+        }
     }
 }
