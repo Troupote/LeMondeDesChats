@@ -153,8 +153,30 @@ public class AiController : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        TimeManager.OnTimePause += HandleTimePause;
+    }
+
+    void OnDisable()
+    {
+        TimeManager.OnTimePause -= HandleTimePause;
+    }
+
+    private bool isPaused = false;
+    private void HandleTimePause(bool paused)
+    {
+        isPaused = paused;
+        if (agent != null)
+        {
+            agent.isStopped = isPaused;
+        }
+    }
     void Update()
     {
+        if (isPaused)
+            return;
+
         tempsEcoule += Time.deltaTime;
 
         // Augmenter la fatigue lorsque l'agent travaille ou cherche de la nourriture
@@ -167,6 +189,7 @@ public class AiController : MonoBehaviour
         // Vérifier si l'agent est fatigué
         if (fatigue >= fatigueMax && etatActuel != AiState.Nourriture)
         {
+            RessourcesGlobales.Instance.AddProsperity(-20);
             etatActuel = AiState.Nourriture;
             tempsEcoule = 0f; // Réinitialiser le temps écoulé pour le nouvel état
             resourceCollected = false; // Réinitialiser le flag

@@ -20,7 +20,15 @@ public class SchoolController : MonoBehaviour
     public void GoToSchool()
     {
         var aiControllerSelected =  aiSelector.aiSelected.GetComponent<AiController>();
-        aiControllerSelected.SchoolState();
+        if(Time.timeScale == 0f)
+        {
+            QueueActions.AddActions(aiControllerSelected.SchoolState);
+        }
+        else
+        {
+            aiControllerSelected.SchoolState();
+        }
+        
     }
 
     public void AssignJob()

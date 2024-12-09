@@ -4,12 +4,12 @@ using UnityEngine;
 public class TimeManager : MonoBehaviour
 {
     [Header("Time Settings")]
-    public float dayDuration = 60f; // Y unités de temps pour une journée
+    public float dayDuration = 60f; // Durée d'une journée en secondes
     private float dayTimer = 0f;
     public int currentDay = 0;
 
     [Header("Population Settings")]
-    public float spawnInterval = 30f; // X unités de temps pour l'ajout de nouveaux individus
+    public float spawnInterval = 30f; // Intervalle pour l'ajout de nouveaux individus
     private float spawnTimer = 0f;
     public GameObject individualPrefab; // Prefab de l'agent AI
     private List<AiController> individuals = new List<AiController>();
@@ -17,29 +17,46 @@ public class TimeManager : MonoBehaviour
     [SerializeField]
     private CanvasManager canvasManager;
 
+    [SerializeField]
+    private Light directionalLight;
+
+    private bool isTimePaused = false;
+
+
     private void Start()
     {
         canvasManager.timeSlider.maxValue = dayDuration;
     }
+
     void Update()
     {
-        // Gestion du temps de la journée
-        dayTimer += Time.deltaTime;
-        canvasManager.updateTimeSlider(dayTimer);
-
-        if (dayTimer >= dayDuration)
+        if (!isTimePaused)
         {
-            dayTimer = 0f;
-            currentDay++;
-            EndOfDay();
-        }
+            // Gestion du temps de la journée
+            dayTimer += Time.deltaTime;
+            canvasManager.updateTimeSlider(dayTimer);
 
-        // Gestion du temps pour l'ajout de nouveaux individus
-        spawnTimer += Time.deltaTime;
-        if (spawnTimer >= spawnInterval)
-        {
-            spawnTimer = 0f;
-            SpawnNewIndividual();
+            // Calcul de la progression de la journée
+            float dayFraction = dayTimer / dayDuration;
+            // Calcul de l'angle du soleil (de 0 à 180 degrés)
+            float sunAngle = Mathf.Lerp(0f, 180f, dayFraction);
+            // Mise à jour de la rotation de la lumière directionnelle
+            directionalLight.transform.rotation = Quaternion.Euler(new Vector3(sunAngle, 0f, 0f));
+
+            if (dayTimer >= dayDuration)
+            {
+                dayTimer = 0f;
+                currentDay++;
+                EndOfDay();
+            }
+
+            // Gestion du temps pour l'ajout de nouveaux individus
+            spawnTimer += Time.deltaTime;
+            if (spawnTimer >= spawnInterval)
+            {
+                spawnTimer = 0f;
+                SpawnNewIndividual();
+            }
         }
     }
 
@@ -80,7 +97,6 @@ public class TimeManager : MonoBehaviour
         Debug.Log("Fin du jour " + currentDay + ". Tous les individus ont vieilli.");
     }
 
-
     void SpawnNewIndividual()
     {
         // Déterminer la position de spawn (à adapter selon vos besoins)
@@ -117,6 +133,39 @@ public class TimeManager : MonoBehaviour
             individuals.Remove(ai);
     }
 
+    public delegate void TimePauseHandler(bool isPaused);
+    public static event TimePauseHandler OnTimePause;
 
+    public void PauseTime()
+    {
+        if (!isTimePaused)
+        {
+            isTimePaused = true;
+            Time.timeScale = 0f;
 
+            // Notifier les agents AI
+            OnTimePause?.Invoke(true);
+        }
+        else
+        {
+            isTimePaused = false;
+            Time.timeScale = 1f;
+
+            // Notifier les agents AI
+            OnTimePause?.Invoke(false);
+            QueueActions.StartActions();
+            QueueActions.ClearActions();
+
+        }
+
+    }
+
+    public void ResumeTime()
+    {
+        isTimePaused = false;
+        Time.timeScale = 1f;
+
+        // Notifier les agents AI
+        OnTimePause?.Invoke(false);
+    }
 }
