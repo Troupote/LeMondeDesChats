@@ -317,11 +317,6 @@ public class AiController : MonoBehaviour
             if (closestWaypoint != null)
             {
                 agent.SetDestination(closestWaypoint.position + randomOffset);
-                if (new Vector2((int)closestWaypoint.position.x/10, (int)closestWaypoint.position.z/10)== new Vector2((int)transform.position.x/10, (int)transform.position.y/10) && etatActuel == AiState.School)
-                {
-                    var obj = GameObject.FindGameObjectsWithTag("SchoolWaypoint");
-                    obj[0].GetComponent<SchoolController>().AssignJob();
-                }
 
             }
             else
@@ -334,6 +329,11 @@ public class AiController : MonoBehaviour
     public void AgeOneDay()
     {
         age++;
+        if (age == 10)
+        {
+            Destroy(gameObject);
+        }
+
         Debug.Log(gameObject.name + " a maintenant " + age + " jours.");
         // Ajouter de la logique supplémentaire en fonction de l'âge (par exemple, mourir après un certain âge)
     }
@@ -374,7 +374,6 @@ public class AiController : MonoBehaviour
         foreach (var obj in schoolWaypointsObjects)
         {
             schoolWaypoints.Add(obj.transform);
-            Debug.Log(obj);
         }
     }
 }

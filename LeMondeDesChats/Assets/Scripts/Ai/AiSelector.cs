@@ -21,7 +21,6 @@ public class AiSelector : MonoBehaviour
         if (oldRenderer != null)
         {
             oldRenderer.materials = new Material[1] { oldRenderer.materials[0] };
-            Debug.Log("Apply");
         }
         meshRenderer.materials = Mats;
         oldRenderer = meshRenderer;  
