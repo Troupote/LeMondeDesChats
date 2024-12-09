@@ -16,9 +16,11 @@ public class BuildManager : MonoBehaviour
     [SerializeField] private GameObject _buttonPrefab;
     [SerializeField] private BuildingSO[] _buildings;
     [SerializeField] private Transform _content;
+    [SerializeField] private Tag _builderTag;
     [SerializeField] private bool _deactivateBuilding = true;
 
     private List<BuildButton> _buildButtons;
+    private bool _hasEnoughBuilderToUpdate;
 
     struct BuildButton
     {
@@ -86,15 +88,37 @@ public class BuildManager : MonoBehaviour
     {
         if (IsBuilding
             && tile.CanBuild
-            && RessourcesGlobales.IsRessourcesAvailable(Building))
+            && RessourcesGlobales.IsRessourcesAvailable(Building)
+            && HasEnoughBuilder(out var builders))
         {
-            // Navmesh to build
-
-            tile.SetBuilding(Instantiate(Building.Prefab, tile.transform));
-            RessourcesGlobales.UseRessources(Building);
+            Instance.StartCoroutine(Coroutine_StartBuilding(tile, builders));
 
             if (Instance._deactivateBuilding)
                 Instance.StopBuilding();
         }
+    }
+
+    public static bool HasEnoughBuilder(out AiController[] builders)
+    {
+        builders = GameObject.FindGameObjectsWithTag(Instance._builderTag)
+            .Select(x => x.GetComponent<AiController>())
+            .Where(x => x.etatActuel != AiController.AiState.Travail)
+            .ToArray();
+
+        return builders.Length >= Building.Worker;
+    }
+
+    public static bool HasEnoughBuilder() => HasEnoughBuilder(out AiController[] builders);
+
+    private static IEnumerator Coroutine_StartBuilding(Tile tile, AiController[] builders)
+    {
+        var building = Instantiate(Building.Prefab, tile.transform);
+        building.SetActive(false);
+        tile.SetBuilding(building);
+
+        yield return new WaitUntil(() => builders.All(x => x.IsAtWorkDestination()));
+
+        building.SetActive(true);
+        RessourcesGlobales.UseRessources(Building);
     }
 }
