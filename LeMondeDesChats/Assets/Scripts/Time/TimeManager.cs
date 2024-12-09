@@ -16,6 +16,10 @@ public class TimeManager : MonoBehaviour
 
     [SerializeField]
     private CanvasManager canvasManager;
+    
+    [SerializeField]
+    private Light directionalLight;
+
 
     private void Start()
     {
@@ -27,6 +31,13 @@ public class TimeManager : MonoBehaviour
         dayTimer += Time.deltaTime;
         canvasManager.updateTimeSlider(dayTimer);
 
+        // Calcul de la progression de la journée
+        float dayFraction = dayTimer / dayDuration;
+        // Calcul de l'angle du soleil (de -90 à 90 degrés)
+        float sunAngle = Mathf.Lerp(-90f, 90f, dayFraction);
+        // Mise à jour de la rotation de la lumière directionnelle
+        directionalLight.transform.rotation = Quaternion.Euler(new Vector3(sunAngle, 0f, 0f));
+        
         if (dayTimer >= dayDuration)
         {
             dayTimer = 0f;
@@ -48,6 +59,7 @@ public class TimeManager : MonoBehaviour
         // Faire vieillir tous les individus
         foreach (AiController ai in individuals)
         {
+            
             ai.AgeOneDay();
         }
 
