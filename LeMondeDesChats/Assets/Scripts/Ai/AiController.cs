@@ -135,7 +135,19 @@ public class AiController : MonoBehaviour
 
         wandererWaypoints = wandererWaypointsObjects[0].GetComponent<WandererScript>().targetWanderer;
         //#
-        etatActuel = TagOfWork.stringTag == "RestWaypoint" ? AiState.Wanderer : AiState.Travail;
+        if(TagOfWork.stringTag == "RestWaypoint")
+        {
+            etatActuel = AiState.Wanderer;
+        }
+        else if(TagOfWork.stringTag == "SchoolWaypoint")
+        {
+            etatActuel = AiState.School;
+        }
+        else
+        {
+            etatActuel = AiState.Travail;
+        }
+
 
 
         tempsEcoule = Random.Range(0f, dureeEtat + Random.Range(-variationEtat, variationEtat));
@@ -176,6 +188,7 @@ public class AiController : MonoBehaviour
             return;
 
         tempsEcoule += Time.deltaTime;
+
 
         // Augmenter la fatigue lorsque l'agent travaille ou cherche de la nourriture
         if (etatActuel == AiState.Travail || etatActuel == AiState.Nourriture)
