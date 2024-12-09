@@ -20,7 +20,8 @@ public class BuildManager : MonoBehaviour
     [SerializeField] private bool _deactivateBuilding = true;
 
     private List<BuildButton> _buildButtons;
-    private bool _hasEnoughBuilderToUpdate;
+    private AiController[] _builders;
+    private bool _hasEnoughBuilderComputed;
 
     struct BuildButton
     {
@@ -72,6 +73,11 @@ public class BuildManager : MonoBehaviour
             button.Update();
     }
 
+    private void LateUpdate()
+    {
+        _hasEnoughBuilderComputed = false;
+    }
+
     public void StartBuilding(BuildingSO SO)
     {
         IsBuilding = true;
@@ -100,12 +106,19 @@ public class BuildManager : MonoBehaviour
 
     public static bool HasEnoughBuilder(out AiController[] builders)
     {
-        builders = GameObject.FindGameObjectsWithTag(Instance._builderTag)
-            .Select(x => x.GetComponent<AiController>())
-            .Where(x => x.etatActuel != AiController.AiState.Travail)
-            .ToArray();
+        if (!Instance._hasEnoughBuilderComputed)
+        {
+            Instance._builders = GameObject.FindGameObjectsWithTag(Instance._builderTag)
+                .Select(x => x.GetComponent<AiController>())
+                .Where(x => x.etatActuel != AiController.AiState.Travail)
+                .ToArray();
 
-        return builders.Length >= Building.Worker;
+            Instance._hasEnoughBuilderComputed = true;
+        }
+        
+        builders = Instance._builders;
+
+        return Instance._builders.Length >= Building.Worker;
     }
 
     public static bool HasEnoughBuilder() => HasEnoughBuilder(out AiController[] builders);
@@ -120,5 +133,10 @@ public class BuildManager : MonoBehaviour
 
         building.SetActive(true);
         RessourcesGlobales.UseRessources(Building);
+
+        foreach (var builder in builders)
+        {
+            builder.etatActuel = AiController.AiState.Repos;
+        }
     }
 }
