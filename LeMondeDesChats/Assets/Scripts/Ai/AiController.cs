@@ -231,6 +231,12 @@ public class AiController : MonoBehaviour
 
     }
 
+    public void GoBuild(Transform Position)
+    {
+        etatActuel = AiState.Travail;
+        agent.SetDestination(Position.position);
+    }
+
     public bool IsAtWorkDestination()
     {
         return etatActuel == AiState.Travail && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending;
