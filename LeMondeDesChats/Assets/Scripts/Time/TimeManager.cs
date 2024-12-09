@@ -4,7 +4,7 @@ using UnityEngine;
 public class TimeManager : MonoBehaviour
 {
     [Header("Time Settings")]
-    public float dayDuration = 60f; // Durée d'une journée en secondes
+    public float dayDuration = 60f; // Durée totale d'un cycle jour/nuit en secondes
     private float dayTimer = 0f;
     public int currentDay = 0;
 
@@ -22,6 +22,9 @@ public class TimeManager : MonoBehaviour
 
     private bool isTimePaused = false;
 
+    public delegate void TimePauseHandler(bool isPaused);
+    public static event TimePauseHandler OnTimePause;
+
     private void Start()
     {
         canvasManager.timeSlider.maxValue = dayDuration;
@@ -35,12 +38,21 @@ public class TimeManager : MonoBehaviour
             dayTimer += Time.deltaTime;
             canvasManager.updateTimeSlider(dayTimer);
 
-            // Calcul de la progression de la journée
-            float dayFraction = dayTimer / dayDuration;
-            // Calcul de l'angle du soleil (de 0 à 180 degrés)
-            float sunAngle = Mathf.Lerp(0f, 180f, dayFraction);
+            // Calcul de la fraction du cycle (de 0 à 1)
+            float cycleFraction = dayTimer / dayDuration;
+
+            // Calcul de l'angle du soleil (de 0° à 360°)
+            float sunAngle = cycleFraction * 360f;
+
             // Mise à jour de la rotation de la lumière directionnelle
-            directionalLight.transform.rotation = Quaternion.Euler(new Vector3(sunAngle, 0f, 0f));
+            directionalLight.transform.rotation = Quaternion.Euler(new Vector3(sunAngle - 90f, 0f, 0f));
+
+            // Ajustement de l'intensité de la lumière pour simuler le jour et la nuit
+            float lightIntensity = Mathf.Clamp01(Mathf.Sin(cycleFraction * Mathf.PI));
+            directionalLight.intensity = lightIntensity;
+
+            // Optionnel : Ajustement de la couleur de la lumière pour simuler les levers et couchers de soleil
+            UpdateLightColor(cycleFraction);
 
             if (dayTimer >= dayDuration)
             {
@@ -56,6 +68,35 @@ public class TimeManager : MonoBehaviour
                 spawnTimer = 0f;
                 SpawnNewIndividual();
             }
+        }
+    }
+
+    void UpdateLightColor(float cycleFraction)
+    {
+        Color sunriseColor = new Color(1f, 0.5f, 0f); // Orange du lever de soleil
+        Color noonColor = Color.white;                // Lumière blanche du midi
+        Color sunsetColor = new Color(1f, 0.5f, 0f);  // Orange du coucher de soleil
+        Color nightColor = Color.black;               // Noir pour la nuit
+
+        if (cycleFraction <= 0.25f) // Lever du soleil
+        {
+            float t = cycleFraction / 0.25f;
+            directionalLight.color = Color.Lerp(nightColor, sunriseColor, t);
+        }
+        else if (cycleFraction <= 0.5f) // Journée
+        {
+            float t = (cycleFraction - 0.25f) / 0.25f;
+            directionalLight.color = Color.Lerp(sunriseColor, noonColor, t);
+        }
+        else if (cycleFraction <= 0.75f) // Après-midi vers coucher du soleil
+        {
+            float t = (cycleFraction - 0.5f) / 0.25f;
+            directionalLight.color = Color.Lerp(noonColor, sunsetColor, t);
+        }
+        else // Nuit
+        {
+            float t = (cycleFraction - 0.75f) / 0.25f;
+            directionalLight.color = Color.Lerp(sunsetColor, nightColor, t);
         }
     }
 
@@ -132,8 +173,6 @@ public class TimeManager : MonoBehaviour
             individuals.Remove(ai);
     }
 
-    public delegate void TimePauseHandler(bool isPaused);
-    public static event TimePauseHandler OnTimePause;
 
     public void PauseTime()
     {
