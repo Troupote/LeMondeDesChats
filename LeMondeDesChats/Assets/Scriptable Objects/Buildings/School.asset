@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04174a1e12352cf4aa9fa927e23399ed, type: 3}
   m_Name: School
   m_EditorClassIdentifier: 
-  <Prefab>k__BackingField: {fileID: 9086970628903902142, guid: 19050dba4b6431645b2778e80cefbec0,
+  <Prefab>k__BackingField: {fileID: 9086970628903902142, guid: d55fda1176d9ce4479d2532e2cfe9109,
     type: 3}
-  <Wood>k__BackingField: 0
-  <Stone>k__BackingField: 0
+  <Wood>k__BackingField: 1
+  <Stone>k__BackingField: 2
