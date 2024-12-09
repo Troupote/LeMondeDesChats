@@ -106,16 +106,16 @@ public class BuildManager : MonoBehaviour
 
     public static bool HasEnoughBuilder(out AiController[] builders)
     {
-        
         Instance._builders = GameObject.FindGameObjectsWithTag(Instance._builderTag)
             .Select(x => x.GetComponent<AiController>())
-            .Where(x => x.etatActuel != AiController.AiState.Travail)
+            .Where(y => y.etatActuel != AiController.AiState.Travail)
             .ToArray();
 
         //Instance._hasEnoughBuilderComputed = true;
         
         builders = Instance._builders;
 
+        Debug.Log($"HasEnoughBuilder : {builders.Length}|{Building.Worker} = {Instance._builders.Length >= Building.Worker}");
         return Instance._builders.Length >= Building.Worker;
     }
 

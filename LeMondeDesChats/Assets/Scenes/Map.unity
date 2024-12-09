@@ -566,9 +566,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb9bb744e8631e4896e391bc069e13a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nourriture: 0
-  <bois>k__BackingField: 0
-  <pierre>k__BackingField: 0
+  nourriture: 1000
+  <bois>k__BackingField: 1000
+  <pierre>k__BackingField: 1000
   canvasManager: {fileID: 0}
 --- !u!1001 &702042000
 PrefabInstance:
