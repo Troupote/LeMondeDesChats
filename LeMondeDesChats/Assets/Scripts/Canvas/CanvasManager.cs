@@ -13,9 +13,18 @@ public class CanvasManager : MonoBehaviour
     [SerializeField]
     private TMP_Text woodText;
 
+    [SerializeField]
+    private TMP_Text stoneText;
+
     public Slider timeSlider;
 
+    public Slider prosperityGauge;
 
+    private void Start()
+    {
+        prosperityGauge.minValue = 0;
+        prosperityGauge.maxValue = RessourcesGlobales.Instance.prosperityMax;
+    }
 
     public void updatefoodText(int value)
     {
@@ -27,9 +36,19 @@ public class CanvasManager : MonoBehaviour
         woodText.text = value.ToString();
     }
 
+    public void updateStoneText(int value)
+    {
+        stoneText.text = value.ToString();
+    }
+
     public void updateTimeSlider(float value)
     {
         timeSlider.value = value;
     }
 
+
+    public void updateProperityGauge(float value)
+    {
+        prosperityGauge.value = value;
+    }
 }
