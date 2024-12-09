@@ -179,7 +179,7 @@ GameObject:
   - component: {fileID: 7694203314518996735}
   m_Layer: 0
   m_Name: School
-  m_TagString: RestWaypoint
+  m_TagString: SchoolWaypoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

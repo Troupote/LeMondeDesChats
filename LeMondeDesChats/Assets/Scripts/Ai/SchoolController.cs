@@ -20,7 +20,15 @@ public class SchoolController : MonoBehaviour
     public void GoToSchool()
     {
         var aiControllerSelected =  aiSelector.aiSelected.GetComponent<AiController>();
-        aiControllerSelected.SchoolState();
+        if(Time.timeScale == 0f)
+        {
+            QueueActions.AddActions(aiControllerSelected.SchoolState);
+        }
+        else
+        {
+            aiControllerSelected.SchoolState();
+        }
+        
     }
 
     public void AssignJob()
@@ -29,20 +37,21 @@ public class SchoolController : MonoBehaviour
         var age = aiControllerSelected.age;
         var pos = aiSelector.aiSelected.transform.position;
         Destroy(aiSelector.aiSelected);
-        foreach(var entity in entityPrefab) 
+        foreach (var entity in entityPrefab)
         {
-            if(entity.tag == dropDownJobs.options[dropDownJobs.value].text)
+            if (entity.tag == dropDownJobs.options[dropDownJobs.value].text)
             {
                 prefabToInstantiate = entity;
                 break;
             }
-
         }
-        var obj = Instantiate(prefabToInstantiate,pos, Quaternion.identity, gameObject.transform).GetComponent<NavMeshAgent>();
-        obj.GetComponent<AiController>().age = age;
-    }
 
-    string GetTextBeforeColon(string text)
+        var obj = Instantiate(prefabToInstantiate, pos, Quaternion.identity, gameObject.transform).GetComponent<NavMeshAgent>();
+        obj.GetComponent<AiController>().age = age;
+
+
+    }
+    private string GetTextBeforeColon(string text)
     {
         int colonIndex = text.IndexOf(":");
         if (colonIndex != -1)

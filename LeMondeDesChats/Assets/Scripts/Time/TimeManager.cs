@@ -4,7 +4,7 @@ using UnityEngine;
 public class TimeManager : MonoBehaviour
 {
     [Header("Time Settings")]
-    public float dayDuration = 60f; // Durée totale d'un cycle jour/nuit en secondes
+    public float dayDuration = 60f; // Durï¿½e totale d'un cycle jour/nuit en secondes
     private float dayTimer = 0f;
     public int currentDay = 0;
 
@@ -34,24 +34,24 @@ public class TimeManager : MonoBehaviour
     {
         if (!isTimePaused)
         {
-            // Gestion du temps de la journée
+            // Gestion du temps de la journï¿½e
             dayTimer += Time.deltaTime;
             canvasManager.updateTimeSlider(dayTimer);
 
-            // Calcul de la fraction du cycle (de 0 à 1)
+            // Calcul de la fraction du cycle (de 0 ï¿½ 1)
             float cycleFraction = dayTimer / dayDuration;
 
-            // Calcul de l'angle du soleil (de 0° à 360°)
+            // Calcul de l'angle du soleil (de 0ï¿½ ï¿½ 360ï¿½)
             float sunAngle = cycleFraction * 360f;
 
-            // Mise à jour de la rotation de la lumière directionnelle
+            // Mise ï¿½ jour de la rotation de la lumiï¿½re directionnelle
             directionalLight.transform.rotation = Quaternion.Euler(new Vector3(sunAngle - 90f, 0f, 0f));
 
-            // Ajustement de l'intensité de la lumière pour simuler le jour et la nuit
+            // Ajustement de l'intensitï¿½ de la lumiï¿½re pour simuler le jour et la nuit
             float lightIntensity = Mathf.Clamp01(Mathf.Sin(cycleFraction * Mathf.PI));
             directionalLight.intensity = lightIntensity;
 
-            // Optionnel : Ajustement de la couleur de la lumière pour simuler les levers et couchers de soleil
+            // Optionnel : Ajustement de la couleur de la lumiï¿½re pour simuler les levers et couchers de soleil
             UpdateLightColor(cycleFraction);
 
             if (dayTimer >= dayDuration)
@@ -74,7 +74,7 @@ public class TimeManager : MonoBehaviour
     void UpdateLightColor(float cycleFraction)
     {
         Color sunriseColor = new Color(1f, 0.5f, 0f); // Orange du lever de soleil
-        Color noonColor = Color.white;                // Lumière blanche du midi
+        Color noonColor = Color.white;                // Lumiï¿½re blanche du midi
         Color sunsetColor = new Color(1f, 0.5f, 0f);  // Orange du coucher de soleil
         Color nightColor = Color.black;               // Noir pour la nuit
 
@@ -83,12 +83,12 @@ public class TimeManager : MonoBehaviour
             float t = cycleFraction / 0.25f;
             directionalLight.color = Color.Lerp(nightColor, sunriseColor, t);
         }
-        else if (cycleFraction <= 0.5f) // Journée
+        else if (cycleFraction <= 0.5f) // Journï¿½e
         {
             float t = (cycleFraction - 0.25f) / 0.25f;
             directionalLight.color = Color.Lerp(sunriseColor, noonColor, t);
         }
-        else if (cycleFraction <= 0.75f) // Après-midi vers coucher du soleil
+        else if (cycleFraction <= 0.75f) // Aprï¿½s-midi vers coucher du soleil
         {
             float t = (cycleFraction - 0.5f) / 0.25f;
             directionalLight.color = Color.Lerp(noonColor, sunsetColor, t);
@@ -118,7 +118,7 @@ public class TimeManager : MonoBehaviour
         }
         else
         {
-            // Pas assez de nourriture, des individus meurent aléatoirement
+            // Pas assez de nourriture, des individus meurent alï¿½atoirement
             int deficit = totalIndividus - nourritureDisponible;
             RessourcesGlobales.Instance.nourriture = 0;
 
@@ -139,25 +139,25 @@ public class TimeManager : MonoBehaviour
 
     void SpawnNewIndividual()
     {
-        // Déterminer la position de spawn (à adapter selon vos besoins)
+        // Dï¿½terminer la position de spawn (ï¿½ adapter selon vos besoins)
         Vector3 spawnPosition = GetRandomSpawnPosition();
         Quaternion spawnRotation = Quaternion.identity;
 
         GameObject newIndividual = Instantiate(individualPrefab, spawnPosition, spawnRotation);
 
-        // Ajouter le nouvel individu à la liste
+        // Ajouter le nouvel individu ï¿½ la liste
         AiController aiController = newIndividual.GetComponent<AiController>();
         if (aiController != null)
         {
             individuals.Add(aiController);
-            aiController.Initialize(); // Initialiser l'agent si nécessaire
+            aiController.Initialize(); // Initialiser l'agent si nï¿½cessaire
         }
     }
 
     Vector3 GetRandomSpawnPosition()
     {
-        // Implémentez votre logique pour déterminer une position de spawn appropriée
-        // Par exemple, une position aléatoire dans une zone définie
+        // Implï¿½mentez votre logique pour dï¿½terminer une position de spawn appropriï¿½e
+        // Par exemple, une position alï¿½atoire dans une zone dï¿½finie
         return new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10));
     }
 
@@ -176,11 +176,26 @@ public class TimeManager : MonoBehaviour
 
     public void PauseTime()
     {
-        isTimePaused = true;
-        Time.timeScale = 0f;
+        if (!isTimePaused)
+        {
+            isTimePaused = true;
+            Time.timeScale = 0f;
 
-        // Notifier les agents AI
-        OnTimePause?.Invoke(true);
+            // Notifier les agents AI
+            OnTimePause?.Invoke(true);
+        }
+        else
+        {
+            isTimePaused = false;
+            Time.timeScale = 1f;
+
+            // Notifier les agents AI
+            OnTimePause?.Invoke(false);
+            QueueActions.StartActions();
+            QueueActions.ClearActions();
+
+        }
+
     }
 
     public void ResumeTime()

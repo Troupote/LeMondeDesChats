@@ -47,6 +47,14 @@ public class RessourcesGlobales : MonoBehaviour
     public void AddProsperity(int quantite)
     {
         properityValue += quantite;
+        if(properityValue < 0)
+        {
+            properityValue = 0;
+        }
+        else if(properityValue > 100)
+        {
+            properityValue = 100;
+        }
         canvasManager?.updateProperityGauge(properityValue);
     }
 
