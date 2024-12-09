@@ -29,7 +29,7 @@ public class AiController : MonoBehaviour
     [SerializeField]
     private List<Transform> wandererWaypoints = new List<Transform>();
 
-    private enum AiState
+    public enum AiState
     {
         Travail,
         Nourriture,
@@ -38,7 +38,7 @@ public class AiController : MonoBehaviour
         School// #
     }
     [SerializeField]
-    private AiState etatActuel;
+    public AiState etatActuel;
 
     [SerializeField]
     private float dureeEtat = 10f; // Durée de chaque état en secondes
@@ -187,7 +187,7 @@ public class AiController : MonoBehaviour
             }
         }
 
- 
+
         if (tempsEcoule >= dureeEtat + Random.Range(-variationEtat, variationEtat))
         {
             tempsEcoule = 0f;
@@ -197,7 +197,7 @@ public class AiController : MonoBehaviour
         }
 
         // Ajouter des ressources lors de l'accomplissement de l'état Travail
-        if (etatActuel == AiState.Travail && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+        if (IsAtWorkDestination())
         {
             if (!resourceCollected)
             {
@@ -229,6 +229,17 @@ public class AiController : MonoBehaviour
             DefinirDestination();
         }
 
+    }
+
+    public void GoBuild(Transform Position)
+    {
+        etatActuel = AiState.Travail;
+        agent.SetDestination(Position.position);
+    }
+
+    public bool IsAtWorkDestination()
+    {
+        return etatActuel == AiState.Travail && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending;
     }
 
     void DefinirDestination()
@@ -265,7 +276,7 @@ public class AiController : MonoBehaviour
         {
             // Choisir un waypoint aléatoire pour le Wanderer
             int index = Random.Range(0, waypoints.Count);
-            agent.SetDestination(waypoints[index].position );
+            agent.SetDestination(waypoints[index].position + randomOffset);
 
         }
         else
