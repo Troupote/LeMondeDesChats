@@ -15,6 +15,8 @@ TagManager:
   - Lumberjack
   - Wanderer
   - Miner
+  - SchoolWaypoint
+  - School
   layers:
   - Default
   - TransparentFX
