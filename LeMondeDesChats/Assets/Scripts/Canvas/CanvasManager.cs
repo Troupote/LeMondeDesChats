@@ -74,7 +74,7 @@ public class CanvasManager : MonoBehaviour
     {
         GameOverPanel.SetActive(true);
         GamePanel.SetActive(false);
-        textGameOver.text = IsWon == true ? "GAME OVER" : "GG";
+        textGameOver.text = IsWon == true ? "GG" : "GameOver";
     }
 
     public void Retry()

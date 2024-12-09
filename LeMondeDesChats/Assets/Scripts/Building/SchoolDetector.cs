@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SchoolDetector : MonoBehaviour
 {
-    public void OnCollisionEnter(Collision collision)
+    public void OnTriggerEnter(Collision collision)
     {
         Debug.Log("Collision detected with: " + collision.gameObject.name);
 
@@ -17,10 +17,6 @@ public class SchoolDetector : MonoBehaviour
                 Debug.Log("AiController is in School state, triggering event.");
                 DestroyManager.TriggerDestinationReached();
             }
-        }
-        else
-        {
-            Debug.Log("No AiController found on the colliding object.");
         }
     }
 }

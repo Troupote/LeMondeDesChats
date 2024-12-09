@@ -1128,7 +1128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dayDuration: 60
   currentDay: 0
-  timeScale: 60
+  timeScale: 1
   spawnInterval: 30
   individualPrefab: {fileID: 3136950803437151167, guid: 3b58bdc41f401ab45a0b059c31228f65,
     type: 3}
@@ -1431,6 +1431,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7981494518147831439, guid: 62ac0a2b596334840ba9d082712db3f5,
+        type: 3}
+      propertyPath: _builderTag.stringTag
+      value: Builder
       objectReference: {fileID: 0}
     - target: {fileID: 8799070641141673026, guid: 62ac0a2b596334840ba9d082712db3f5,
         type: 3}

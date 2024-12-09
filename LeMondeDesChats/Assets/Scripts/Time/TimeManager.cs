@@ -150,7 +150,7 @@ public class TimeManager : MonoBehaviour
         RessourcesGlobales.Instance.RegisterVillagerAlive(1);
         if (newIndividual.tag == "Builder")
         {
-            RessourcesGlobales.Instance.RegisterBuilderAlive(1);
+            //RessourcesGlobales.Instance.RegisterBuilderAlive(1);
         }
             
 
