@@ -110,7 +110,7 @@ public class AiController : MonoBehaviour
         var restWaypointObjects = GameObject.FindGameObjectsWithTag("RestWaypoint");
 
         // #
-        var schoolWaypointsObjects = GameObject.FindGameObjectsWithTag("SchoolWaypoint");
+        
         var wandererWaypointsObjects = GameObject.FindGameObjectsWithTag("WandererWaypoint");
 
         foreach (var obj in workWaypointObjects)
@@ -128,10 +128,6 @@ public class AiController : MonoBehaviour
             restWaypoints.Add(obj.transform);
         }
 
-        foreach (var obj in schoolWaypointsObjects)
-        {
-            schoolWaypoints.Add(obj.transform);
-        }
 
         // #
 
@@ -323,7 +319,7 @@ public class AiController : MonoBehaviour
                 agent.SetDestination(closestWaypoint.position + randomOffset);
                 if (new Vector2((int)closestWaypoint.position.x/10, (int)closestWaypoint.position.z/10)== new Vector2((int)transform.position.x/10, (int)transform.position.y/10) && etatActuel == AiState.School)
                 {
-                    var obj = GameObject.FindGameObjectsWithTag("School");
+                    var obj = GameObject.FindGameObjectsWithTag("SchoolWaypoint");
                     obj[0].GetComponent<SchoolController>().AssignJob();
                 }
 
@@ -373,5 +369,12 @@ public class AiController : MonoBehaviour
     public void SchoolState()
     {
         etatActuel = AiState.School;
+        var schoolWaypointsObjects = GameObject.FindGameObjectsWithTag("SchoolWaypoint");
+
+        foreach (var obj in schoolWaypointsObjects)
+        {
+            schoolWaypoints.Add(obj.transform);
+            Debug.Log(obj);
+        }
     }
 }
