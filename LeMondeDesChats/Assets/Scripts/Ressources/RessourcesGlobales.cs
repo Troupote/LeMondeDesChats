@@ -42,7 +42,7 @@ public class RessourcesGlobales : MonoBehaviour
     {
         nbrBuilder += value;
         canvasManager?.updateBuilderText(nbrBuilder);
-        Debug.Log("FJGKLFJG");
+       
     }
 
     public void AjouterNourriture(int quantite)
