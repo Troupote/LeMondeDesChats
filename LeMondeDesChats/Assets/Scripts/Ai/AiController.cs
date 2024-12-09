@@ -66,6 +66,8 @@ public class AiController : MonoBehaviour
     // Nouveau : Flag pour éviter la production multiple de ressources
     private bool resourceCollected = false;
 
+    private Transform priorityDestination;
+
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -133,7 +135,7 @@ public class AiController : MonoBehaviour
 
         wandererWaypoints = wandererWaypointsObjects[0].GetComponent<WandererScript>().targetWanderer;
         //#
-        etatActuel = TagOfWork.stringTag == "WandererWaypoint" ? AiState.Wanderer : AiState.Travail;
+        etatActuel = TagOfWork.stringTag == "RestWaypoint" ? AiState.Wanderer : AiState.Travail;
 
 
         tempsEcoule = Random.Range(0f, dureeEtat + Random.Range(-variationEtat, variationEtat));
@@ -216,7 +218,7 @@ public class AiController : MonoBehaviour
         }
 
         // Ajouter des ressources lors de l'accomplissement de l'état Travail
-        if (IsAtWorkDestination())
+        if (etatActuel == AiState.Travail && IsAtWorkDestination())
         {
             if (!resourceCollected)
             {
@@ -253,16 +255,26 @@ public class AiController : MonoBehaviour
     public void GoBuild(Transform Position)
     {
         etatActuel = AiState.Travail;
+        priorityDestination = Position;
         agent.SetDestination(Position.position);
+        //Debug.Log(Position.position);
+    }
+
+    public void EndBuild()
+    {
+        priorityDestination = null;
+        etatActuel = AiState.Wanderer;
     }
 
     public bool IsAtWorkDestination()
     {
-        return etatActuel == AiState.Travail && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending;
+        return agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending;
     }
 
     void DefinirDestination()
     {
+        if (priorityDestination != null)
+            return;
         Vector3 randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
         List<Transform> waypoints = new List<Transform>();
 
@@ -375,6 +387,16 @@ public class AiController : MonoBehaviour
         {
             schoolWaypoints.Add(obj.transform);
             Debug.Log(obj);
+        }
+    }
+
+    public void OnDrawGizmos()
+    {
+
+        if (agent != null && agent.path != null && agent.path.corners.Length > 0 && agent.path.corners.Length%2 != 1)
+        {
+            var path = agent.path;
+            Gizmos.DrawLineList(path.corners);
         }
     }
 }

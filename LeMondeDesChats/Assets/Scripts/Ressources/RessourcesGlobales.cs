@@ -58,7 +58,11 @@ public class RessourcesGlobales : MonoBehaviour
         canvasManager?.updateProperityGauge(properityValue);
     }
 
-    public static bool IsRessourcesAvailable(BuildingSO SO) => Instance.bois >= SO.Wood && Instance.pierre >= SO.Stone;
+    public static bool IsRessourcesAvailable(BuildingSO SO)
+    {
+        bool result = Instance.bois >= SO.Wood && Instance.pierre >= SO.Stone && BuildManager.HasEnoughBuilder(SO);
+        return result;
+    }
 
     public static void UseRessources(int wood, int stone)
     {
