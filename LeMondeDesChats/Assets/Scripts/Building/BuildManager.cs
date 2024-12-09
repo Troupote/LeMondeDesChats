@@ -97,7 +97,7 @@ public class BuildManager : MonoBehaviour
             && RessourcesGlobales.IsRessourcesAvailable(Building)
             && HasEnoughBuilder(out var builders))
         {
-            Instance.StartCoroutine(Coroutine_StartBuilding(tile, builders));
+            Instance.StartCoroutine(Coroutine_StartBuilding(tile, Building, builders));
 
             if (Instance._deactivateBuilding)
                 Instance.StopBuilding();
@@ -106,15 +106,13 @@ public class BuildManager : MonoBehaviour
 
     public static bool HasEnoughBuilder(out AiController[] builders)
     {
-        if (!Instance._hasEnoughBuilderComputed)
-        {
-            Instance._builders = GameObject.FindGameObjectsWithTag(Instance._builderTag)
-                .Select(x => x.GetComponent<AiController>())
-                .Where(x => x.etatActuel != AiController.AiState.Travail)
-                .ToArray();
+        
+        Instance._builders = GameObject.FindGameObjectsWithTag(Instance._builderTag)
+            .Select(x => x.GetComponent<AiController>())
+            .Where(x => x.etatActuel != AiController.AiState.Travail)
+            .ToArray();
 
-            Instance._hasEnoughBuilderComputed = true;
-        }
+        //Instance._hasEnoughBuilderComputed = true;
         
         builders = Instance._builders;
 
@@ -123,17 +121,33 @@ public class BuildManager : MonoBehaviour
 
     public static bool HasEnoughBuilder() => HasEnoughBuilder(out AiController[] builders);
 
-    private static IEnumerator Coroutine_StartBuilding(Tile tile, AiController[] builders)
+    private static IEnumerator Coroutine_StartBuilding(Tile tile, BuildingSO SO, AiController[] builders)
     {
-        var building = Instantiate(Building.Prefab, tile.transform);
+        var building = Instantiate(SO.Prefab, tile.transform);
+        Debug.Log("Spawn Prefab");
         building.SetActive(false);
+        Debug.Log("Set Instance to deactivated");
         tile.SetBuilding(building);
 
-        yield return new WaitUntil(() => builders.All(x => x.IsAtWorkDestination()));
+        Debug.Log("Send GoBuild()");
+        foreach (var builder in builders)
+        {
+            builder.GoBuild(tile.transform);
+        }
+
+        yield return new WaitUntil(() =>
+        {
+            var isAtWorkDestination = builders.All(x => x.IsAtWorkDestination());
+            Debug.Log($"All isAtWorkDestination: {isAtWorkDestination}");
+            return isAtWorkDestination;
+        });
+        Debug.Log("All reached destination");
 
         building.SetActive(true);
-        RessourcesGlobales.UseRessources(Building);
+        Debug.Log("Set Instance to activated");
+        RessourcesGlobales.UseRessources(SO);
 
+        Debug.Log("Set back to wander");
         foreach (var builder in builders)
         {
             builder.etatActuel = AiController.AiState.Repos;
