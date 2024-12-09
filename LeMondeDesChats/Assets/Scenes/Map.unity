@@ -396,11 +396,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7981494518147831439, guid: 62ac0a2b596334840ba9d082712db3f5,
-        type: 3}
-      propertyPath: _builderTag.stringTag
-      value: Builder
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -569,6 +564,8 @@ MonoBehaviour:
   nourriture: 1000
   properityValue: 0
   prosperityMax: 0
+  nbrVillager: 0
+  nbrBuilder: 0
   <bois>k__BackingField: 1000
   <pierre>k__BackingField: 1000
   canvasManager: {fileID: 0}

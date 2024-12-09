@@ -227,5 +227,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 39bea0169d7b5e74aa7525955062ba4a, type: 2}
   _content: {fileID: 8799070641141673026}
   _builderTag:
-    stringTag: Untagged
+    stringTag: Builder
   _deactivateBuilding: 1
