@@ -22,6 +22,7 @@ public class TimeManager : MonoBehaviour
 
     private bool isTimePaused = false;
 
+
     private void Start()
     {
         canvasManager.timeSlider.maxValue = dayDuration;
@@ -137,11 +138,26 @@ public class TimeManager : MonoBehaviour
 
     public void PauseTime()
     {
-        isTimePaused = true;
-        Time.timeScale = 0f;
+        if (!isTimePaused)
+        {
+            isTimePaused = true;
+            Time.timeScale = 0f;
 
-        // Notifier les agents AI
-        OnTimePause?.Invoke(true);
+            // Notifier les agents AI
+            OnTimePause?.Invoke(true);
+        }
+        else
+        {
+            isTimePaused = false;
+            Time.timeScale = 1f;
+
+            // Notifier les agents AI
+            OnTimePause?.Invoke(false);
+            QueueActions.StartActions();
+            QueueActions.ClearActions();
+
+        }
+
     }
 
     public void ResumeTime()
