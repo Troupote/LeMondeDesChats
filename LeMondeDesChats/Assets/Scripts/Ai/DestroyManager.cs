@@ -31,14 +31,13 @@ public class DestroyManager: MonoBehaviour
     {
         // Invoquer l'événement
         OnDestinationReached?.Invoke();
-        
+
     }
 
     public void CollectDatas(GameObject aiSelected,GameObject prefabToInstantiate)
     {
         var aiController = aiSelected.GetComponent<AiController>();
         futurePrefab = prefabToInstantiate;
-        Debug.Log(futurePrefab.name);
         aiReferences = aiSelected;
         var age = aiController.age;
         var pos = aiSelected.transform.position;
@@ -47,11 +46,10 @@ public class DestroyManager: MonoBehaviour
         var studiantController = studiantPrefabCopy.GetComponent<AiController>();
         studiantController.age = age;
         studiantController.SchoolState();
-        
         OnEnable();
     }
 
-    private void ReplaceStudiantByNewJob()
+    public void ReplaceStudiantByNewJob()
     {
         var age = studiantPrefabCopy.GetComponent<AiController>().age;
         var pos = studiantPrefabCopy.transform.position;

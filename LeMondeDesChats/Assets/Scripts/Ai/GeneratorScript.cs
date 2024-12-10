@@ -16,7 +16,9 @@ public class GeneratorScript : MonoBehaviour
     {
         for (int i = 0; i < nbEntity; i++)
         {
+            
             int randomIndex = Random.Range(0, entityPrefab.Length);
+            randomIndex = i<5 ? i : randomIndex;
             Vector3 randomPosition = new Vector3(
                 transform.position.x + Random.Range(-5.0f, 5.0f),
                 transform.position.y,

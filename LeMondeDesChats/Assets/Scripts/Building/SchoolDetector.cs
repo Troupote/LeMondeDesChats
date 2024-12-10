@@ -13,7 +13,7 @@ public class SchoolDetector : MonoBehaviour
 
             if (aiController.etatActuel == AiController.AiState.School)
             {
-                Debug.Log("AiController is in School state, triggering event.");
+               
                 DestroyManager.TriggerDestinationReached();
             }
         }

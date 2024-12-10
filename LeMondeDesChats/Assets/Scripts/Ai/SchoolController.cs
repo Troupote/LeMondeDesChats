@@ -12,9 +12,17 @@ public class SchoolController : MonoBehaviour
     [SerializeField] private AiSelector aiSelector;
     private GameObject prefabToInstantiate;
     [SerializeField] private DestroyManager destroyManager;
+    [SerializeField] private GameObject panelSchool;
 
     [SerializeField]
     private GameObject[] entityPrefab;
+
+    private void Start()
+    {
+        Button buttonSchool = panelSchool.GetComponent<Button>();
+        buttonSchool.interactable = false;
+        panelSchool.GetComponent<Image>().color = Color.gray;
+    }
     public void SelectJob()
     {
         aiSelector.schoolText.text = GetTextBeforeColon(aiSelector.schoolText.text) + ": "+  dropDownJobs.options[dropDownJobs.value].text;
@@ -27,9 +35,18 @@ public class SchoolController : MonoBehaviour
             }
         }
     }
+
+    public void UnlockSchool()
+    {
+        Debug.Log("test");
+        Button buttonSchool = panelSchool.GetComponent<Button>();
+        buttonSchool.interactable = true;
+        panelSchool.GetComponent<Image>().color = Color.white;
+    }
     public void GoToSchool()
     {
         var aiControllerSelected =  aiSelector.aiSelected.GetComponent<AiController>();
+        Debug.Log("");
         destroyManager.CollectDatas(aiSelector.aiSelected,prefabToInstantiate);
 
         if(Time.timeScale == 0f)

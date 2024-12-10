@@ -137,7 +137,7 @@ public class TimeManager : MonoBehaviour
                 }
             }
         }
-        Debug.Log("Fin du jour " + currentDay + ". Tous les individus ont vieilli.");
+        //Debug.Log("Fin du jour " + currentDay + ". Tous les individus ont vieilli.");
     }
 
     void SpawnNewIndividual()

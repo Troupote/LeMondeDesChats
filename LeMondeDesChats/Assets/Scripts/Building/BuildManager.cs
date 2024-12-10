@@ -22,6 +22,7 @@ public class BuildManager : MonoBehaviour
     private List<BuildButton> _buildButtons;
     private AiController[] _builders;
     private bool _hasEnoughBuilderComputed;
+    public SchoolController _schoolController;
 
     struct BuildButton
     {
@@ -101,6 +102,21 @@ public class BuildManager : MonoBehaviour
             && HasEnoughBuilder(Building, out var builders))
         {
             Instance.StartCoroutine(Coroutine_StartBuilding(tile, Building, builders));
+            switch (Building.Prefab.name)
+            {
+                case "Farm":
+                    break;
+                case "House":
+                    break;
+                case "Library":
+                    break;
+                case "Museum":
+                    break;
+                case "School":
+                    Instance._schoolController.UnlockSchool();
+                    break;
+
+            }
 
             if (Instance._deactivateBuilding)
                 Instance.StopBuilding();

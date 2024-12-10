@@ -365,7 +365,7 @@ public class AiController : MonoBehaviour
                 
         }
 
-        Debug.Log(gameObject.name + " a maintenant " + age + " jours.");
+        //Debug.Log(gameObject.name + " a maintenant " + age + " jours.");
         // Ajouter de la logique supplémentaire en fonction de l'âge (par exemple, mourir après un certain âge)
     }
 
