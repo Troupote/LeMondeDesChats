@@ -1911,41 +1911,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraManager
       objectReference: {fileID: 0}
-    - target: {fileID: 5364141838974294858, guid: b825f5777bca02544a2fb4effba1789d,
-        type: 3}
-      propertyPath: orthographic
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5364141838974294858, guid: b825f5777bca02544a2fb4effba1789d,
-        type: 3}
-      propertyPath: near clip plane
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5364141838974294858, guid: b825f5777bca02544a2fb4effba1789d,
-        type: 3}
-      propertyPath: orthographic size
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7116815590176284872, guid: b825f5777bca02544a2fb4effba1789d,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.80427295
-      objectReference: {fileID: 0}
-    - target: {fileID: 7116815590176284872, guid: b825f5777bca02544a2fb4effba1789d,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.5942601
-      objectReference: {fileID: 0}
-    - target: {fileID: 7116815590176284872, guid: b825f5777bca02544a2fb4effba1789d,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 72.92
-      objectReference: {fileID: 0}
-    - target: {fileID: 7823914618291234179, guid: b825f5777bca02544a2fb4effba1789d,
-        type: 3}
-      propertyPath: m_EventMask.m_Bits
-      value: 4294967295
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
