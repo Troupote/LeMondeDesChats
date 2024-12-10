@@ -244,7 +244,7 @@ PrefabInstance:
     - target: {fileID: 551691154363950802, guid: b064c03052e84044790122151cf2cb98,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -480.5
+      value: -638
       objectReference: {fileID: 0}
     - target: {fileID: 551691154363950802, guid: b064c03052e84044790122151cf2cb98,
         type: 3}
@@ -464,6 +464,11 @@ PrefabInstance:
     - target: {fileID: 3939475183095870192, guid: b064c03052e84044790122151cf2cb98,
         type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3966373606215716162, guid: b064c03052e84044790122151cf2cb98,
+        type: 3}
+      propertyPath: m_Interactable
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4066849078844404622, guid: b064c03052e84044790122151cf2cb98,
@@ -1161,11 +1166,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dayDuration: 60
   currentDay: 0
-  timeScale: 5
+  timeScale: 1
   spawnInterval: 30
   individualPrefab: {fileID: 3136950803437151167, guid: 3b58bdc41f401ab45a0b059c31228f65,
     type: 3}
   canvasManager: {fileID: 13046379}
+  locationToInstantiate: {fileID: 68438763}
   directionalLight: {fileID: 1322665151}
 --- !u!1 &783619172
 GameObject:
@@ -1385,6 +1391,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   studiantPrefab: {fileID: 3136950803437151167, guid: d99999d584587a9489629a6de45d8fa7,
     type: 3}
+  locationToInstantiate: {fileID: 68438763}
 --- !u!4 &858638875
 Transform:
   m_ObjectHideFlags: 0

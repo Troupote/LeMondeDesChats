@@ -34,7 +34,7 @@ public class RessourcesGlobales : MonoBehaviour
     public void RegisterVillagerAlive(int value)
     {
         nbrVillager += value;
-        if(nbrVillager <= 0)
+        if (nbrVillager <= 0)
         {
             canvasManager?.EndGame(false);
         }
@@ -45,7 +45,7 @@ public class RessourcesGlobales : MonoBehaviour
     {
         nbrBuilder += value;
         canvasManager?.updateBuilderText(nbrBuilder);
-       
+
     }
 
     public void AjouterNourriture(int quantite)
@@ -69,11 +69,12 @@ public class RessourcesGlobales : MonoBehaviour
     public void AddProsperity(int quantite)
     {
         properityValue += quantite;
-        if(properityValue < 0)
+        if (properityValue <= 0)
         {
             properityValue = 0;
+            canvasManager?.EndGame(false);
         }
-        else if(properityValue >= 100)
+        else if (properityValue >= 100)
         {
             properityValue = 100;
             canvasManager?.EndGame(true);
@@ -97,6 +98,6 @@ public class RessourcesGlobales : MonoBehaviour
     {
         Instance.bois -= SO.Wood;
         Instance.pierre -= SO.Stone;
-        
+
     }
 }

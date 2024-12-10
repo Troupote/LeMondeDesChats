@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem.XR;
 using static UnityEditor.PlayerSettings;
 
@@ -11,6 +12,7 @@ public class DestroyManager: MonoBehaviour
     [SerializeField] private GameObject studiantPrefab;
     private GameObject studiantPrefabCopy;
     private GameObject futurePrefab;
+    [SerializeField] private GameObject locationToInstantiate;
 
     private static DestroyManager destroyManager;
 
@@ -42,7 +44,7 @@ public class DestroyManager: MonoBehaviour
         var age = aiController.age;
         var pos = aiSelected.transform.position;
         Destroy(aiReferences);
-        studiantPrefabCopy = Instantiate(studiantPrefab, pos, Quaternion.identity);
+        studiantPrefabCopy = Instantiate(studiantPrefab, pos, Quaternion.identity, locationToInstantiate.transform);
         var studiantController = studiantPrefabCopy.GetComponent<AiController>();
         studiantController.age = age;
         studiantController.SchoolState();
@@ -53,9 +55,9 @@ public class DestroyManager: MonoBehaviour
     {
         var age = studiantPrefabCopy.GetComponent<AiController>().age;
         var pos = studiantPrefabCopy.transform.position;
-        Destroy(studiantPrefabCopy);
         var obj = Instantiate(futurePrefab,pos, Quaternion.identity);
         obj.GetComponent<AiController>().age = age;
+        //Destroy(studiantPrefabCopy);
     }
 
 }

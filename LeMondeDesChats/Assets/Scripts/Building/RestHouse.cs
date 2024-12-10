@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RestHouse : MonoBehaviour
 {
-    private int remainingRoom = 4;
+    public List<AiController> remainingRoom ;
 
 
     private void OnTriggerEnter(Collider other)
@@ -13,10 +13,9 @@ public class RestHouse : MonoBehaviour
         {
             if (other.GetComponent<AiController>().etatActuel == AiController.AiState.Repos)
             {
-                if (remainingRoom > 0)
+                if (remainingRoom.Count < 5)
                 {
-                    remainingRoom--;
-                    var objRenderer = other.GetComponent<MeshRenderer>();
+                    StartCoroutine(ActiveRenderer(other.gameObject));
                 }
             }
         }
@@ -30,6 +29,7 @@ public class RestHouse : MonoBehaviour
         yield return new WaitForSeconds(3f);
         obj.GetComponent<MeshRenderer>().enabled = true;
         obj.GetComponent<AiController>().RestState();
+        remainingRoom.Remove(obj.GetComponent<AiController>());
 
     }
 }

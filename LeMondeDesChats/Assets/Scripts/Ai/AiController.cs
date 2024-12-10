@@ -51,7 +51,7 @@ public class AiController : MonoBehaviour
     private const float fatigueParSeconde = 0.8f;   // Fatigue accumulée par seconde
 
     public int age = 0; // Âge de l'individu en jours
-
+    private int oldAge;
     // Type de ressource produit par l'agent
     private enum ResourceType
     {
@@ -197,13 +197,14 @@ public class AiController : MonoBehaviour
 
 
         // Vérifier si l'agent est fatigué
-        if (fatigue >= fatigueMax && etatActuel != AiState.Nourriture && etatActuel != AiState.Repos)
+        if (fatigue >= fatigueMax && etatActuel != AiState.Nourriture && oldAge != age)
         {
             etatActuel = AiState.Repos;
             RestCoord();
             tempsEcoule = 0f; 
             resourceCollected = false; 
             DefinirDestination();
+            oldAge = age;
             return;
         }
 
@@ -313,12 +314,10 @@ public class AiController : MonoBehaviour
             if(etatActuel == AiState.Repos)
             {
                 RessourcesGlobales.Instance.AddProsperity(-2);
+                waypoints = wandererWaypoints;
             }
             return;
         }
-
-
-
 
         if (etatActuel == AiState.Wanderer)
         {
@@ -424,7 +423,13 @@ public class AiController : MonoBehaviour
 
         foreach (var obj in restWaypointsObjects)
         {
-            restWaypoints.Add(obj.transform);
+            if(obj.GetComponent<RestHouse>().remainingRoom.Count<5)
+            {
+                obj.GetComponent<RestHouse>().remainingRoom.Add(this);
+                restWaypoints.Add(obj.transform);
+                break;
+            }
+            
         }
     }
 

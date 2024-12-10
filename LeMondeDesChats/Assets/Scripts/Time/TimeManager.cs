@@ -13,11 +13,13 @@ public class TimeManager : MonoBehaviour
     [Header("Population Settings")]
     public float spawnInterval = 30f; // Intervalle pour l'ajout de nouveaux individus
     private float spawnTimer = 0f;
-    public GameObject individualPrefab; // Prefab de l'agent AI
+    public GameObject[] individualPrefab; // Prefab de l'agent AI
     private List<AiController> individuals = new List<AiController>();
 
     [SerializeField]
     private CanvasManager canvasManager;
+
+    [SerializeField] private GameObject locationToInstantiate;
 
     [SerializeField]
     private Light directionalLight;
@@ -134,6 +136,12 @@ public class TimeManager : MonoBehaviour
                     Destroy(individuAffame.gameObject);
                     //Debug.Log(individuAffame.gameObject.name + " est mort de faim.");
                 }
+                else
+                {
+                    canvasManager?.EndGame(false);
+                }
+
+
             }
         }
         //Debug.Log("Fin du jour " + currentDay + ". Tous les individus ont vieilli.");
@@ -142,14 +150,15 @@ public class TimeManager : MonoBehaviour
     void SpawnNewIndividual()
     {
         // D�terminer la position de spawn (� adapter selon vos besoins)
+        int randomIndex = Random.RandomRange(0, individualPrefab.Length);
         Vector3 spawnPosition = GetRandomSpawnPosition();
         Quaternion spawnRotation = Quaternion.identity;
 
-        GameObject newIndividual = Instantiate(individualPrefab, spawnPosition, spawnRotation);
+        GameObject newIndividual = Instantiate(individualPrefab[randomIndex], spawnPosition, spawnRotation, locationToInstantiate.transform);
         RessourcesGlobales.Instance.RegisterVillagerAlive(1);
         if (newIndividual.tag == "Builder")
         {
-            //RessourcesGlobales.Instance.RegisterBuilderAlive(1);
+            RessourcesGlobales.Instance.RegisterBuilderAlive(1);
         }
             
 

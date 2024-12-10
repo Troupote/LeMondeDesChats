@@ -119,6 +119,7 @@ public class BuildManager : MonoBehaviour
         var building = Instantiate(SO.Prefab, tile.transform);
         building.SetActive(false);
         tile.SetBuilding(building);
+        RessourcesGlobales.Instance.RegisterBuilderAlive(-1);
 
         var buildingName = Building.Prefab.name;
 
@@ -152,6 +153,8 @@ public class BuildManager : MonoBehaviour
                 break;
 
         }
+
+        RessourcesGlobales.Instance.RegisterBuilderAlive(1);
 
         foreach (var builder in currentBuilders)
             builder.EndBuild();

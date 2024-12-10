@@ -34,11 +34,11 @@ public class SchoolController : MonoBehaviour
                 break;
             }
         }
+
     }
 
     public void UnlockSchool()
     {
-        Debug.Log("test");
         Button buttonSchool = panelSchool.GetComponent<Button>();
         buttonSchool.interactable = true;
         panelSchool.GetComponent<Image>().color = Color.white;
@@ -46,7 +46,7 @@ public class SchoolController : MonoBehaviour
     public void GoToSchool()
     {
         var aiControllerSelected =  aiSelector.aiSelected.GetComponent<AiController>();
-        Debug.Log("");
+        Debug.Log(prefabToInstantiate);
         destroyManager.CollectDatas(aiSelector.aiSelected,prefabToInstantiate);
 
         if(Time.timeScale == 0f)
