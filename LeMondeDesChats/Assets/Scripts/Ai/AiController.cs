@@ -31,33 +31,33 @@ public class AiController : MonoBehaviour
 
     public enum AiState
     {
-        Travail,
-        Nourriture,
-        Repos,
+        Work,
+        Food,
+        Rest,
         Wanderer,
         School// #
     }
     [SerializeField]
-    public AiState etatActuel;
+    public AiState currentState;
 
     [SerializeField]
-    private float dureeEtat = 10f; // Durée de chaque état en secondes
+    private float timeduration = 10f; // Durée de chaque état en secondes
     [SerializeField]
     private float variationEtat = 2f; // Variation aléatoire de la durée de l'état
-    private float tempsEcoule;
+    private float elapseTime;
 
-    public float fatigue;
-    private const float fatigueMax = 100f;          // Seuil maximal de fatigue
-    private const float fatigueParSeconde = 0.8f;   // Fatigue accumulée par seconde
+    public float tiredness;
+    private const float tirednessMax = 100f;          // Seuil maximal de tiredness
+    private const float tirednessPerSec = 0.8f;   // Fatigue accumulée par seconde
 
     public int age = 0; // Âge de l'individu en jours
     private int oldAge;
     // Type de ressource produit par l'agent
     private enum ResourceType
     {
-        Bois,
-        Pierre,
-        Nourriture
+        Wood,
+        Stone,
+        Food
     }
 
     [SerializeField]
@@ -84,13 +84,13 @@ public class AiController : MonoBehaviour
         switch (TagOfWork.stringTag)
         {
             case "ForestWaypoint":
-                resourceType = ResourceType.Bois;
+                resourceType = ResourceType.Wood;
                 break;
             case "MineWaypoint":
-                resourceType = ResourceType.Pierre;
+                resourceType = ResourceType.Stone;
                 break;
             case "BushWaypoint":
-                resourceType = ResourceType.Nourriture;
+                resourceType = ResourceType.Food;
                 break;
             case "PlainWaypoint":
                 break;
@@ -101,7 +101,7 @@ public class AiController : MonoBehaviour
             case "SchoolWaypoint":
                 break;
             default:
-                resourceType = ResourceType.Bois;
+                resourceType = ResourceType.Wood;
                 Debug.LogWarning("TagOfWork inconnu. Défaut à Bois.");
                 break;
         }
@@ -131,25 +131,25 @@ public class AiController : MonoBehaviour
             wandererWaypoints.Add(obj.transform);
         }
 
-        //#
-        if (TagOfWork.stringTag == "RestWaypoint")
+
+        if (TagOfWork.stringTag == "RestWaypoint" || this.gameObject.tag == "Wanderer")
         {
 
-            etatActuel = AiState.Wanderer;
+            currentState = AiState.Wanderer;
         }
         else if(TagOfWork.stringTag == "SchoolWaypoint")
         {
-            etatActuel = AiState.School;
+            currentState = AiState.School;
         }
         else
         {
-            etatActuel = AiState.Travail;
+            currentState = AiState.Work;
         }
 
 
 
-        tempsEcoule = Random.Range(0f, dureeEtat + Random.Range(-variationEtat, variationEtat));
-        fatigue = 0f; // Initialiser la fatigue à 0
+        elapseTime = Random.Range(0f, timeduration + Random.Range(-variationEtat, variationEtat));
+        tiredness = 0f; // Initialiser la tiredness à 0
         resourceCollected = false; // Initialiser le flag
         DefinirDestination();
 
@@ -185,65 +185,65 @@ public class AiController : MonoBehaviour
         if (isPaused)
             return;
 
-        tempsEcoule += Time.deltaTime;
+        elapseTime += Time.deltaTime;
 
 
-        // Augmenter la fatigue lorsque l'agent travaille ou cherche de la nourriture
-        if (etatActuel == AiState.Travail || etatActuel == AiState.Nourriture || this.tag == "Builder")
+        // Augmenter la tiredness lorsque l'agent travaille ou cherche de la nourriture
+        if (currentState == AiState.Work || currentState == AiState.Food || this.tag == "Builder")
         {
-            fatigue += fatigueParSeconde * Time.deltaTime;
-            fatigue = Mathf.Min(fatigue, fatigueMax); // Limiter la fatigue au maximum
+            tiredness += tirednessPerSec * Time.deltaTime;
+            tiredness = Mathf.Min(tiredness, tirednessMax); // Limiter la tiredness au maximum
         }
 
 
         // Vérifier si l'agent est fatigué
-        if (fatigue >= fatigueMax && etatActuel != AiState.Nourriture && oldAge != age)
+        if (tiredness >= tirednessMax && currentState != AiState.Food && oldAge != age)
         {
-            etatActuel = AiState.Repos;
+            currentState = AiState.Rest;
             RestCoord();
-            tempsEcoule = 0f; 
+            elapseTime = 0f; 
             resourceCollected = false; 
             DefinirDestination();
             oldAge = age;
             return;
         }
 
-        // Consommer de la nourriture si en état Nourriture et arrivé à destination
-        if (etatActuel == AiState.Nourriture && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+        // Consommer de la nourriture si en état Food et arrivé à destination
+        if (currentState == AiState.Food && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
         {
             if (!resourceCollected)
             {
                 RessourcesGlobales.Instance.AjouterNourriture(-1); // Consomme 1 nourriture
-                fatigue = 0f; // Réinitialiser la fatigue après avoir mangé
-                etatActuel = AiState.Travail; // Revenir au travail
+                tiredness = 0f; // Réinitialiser la tiredness après avoir mangé
+                currentState = AiState.Work; // Revenir au travail
                 resourceCollected = true; // Marquer comme consommé
                 DefinirDestination();
             }
         }
 
 
-        if (tempsEcoule >= dureeEtat + Random.Range(-variationEtat, variationEtat))
+        if (elapseTime >= timeduration + Random.Range(-variationEtat, variationEtat))
         {
-            tempsEcoule = 0f;
-            etatActuel = ObtenirEtatSuivant(etatActuel);
+            elapseTime = 0f;
+            currentState = ObtenirEtatSuivant(currentState);
             resourceCollected = false; // Réinitialiser le flag lors du changement d'état
             DefinirDestination();
         }
 
-        // Ajouter des ressources lors de l'accomplissement de l'état Travail
-        if (etatActuel == AiState.Travail && IsAtWorkDestination())
+        // Ajouter des ressources lors de l'accomplissement de l'état Work
+        if (currentState == AiState.Work && IsAtWorkDestination())
         {
             if (!resourceCollected)
             {
                 switch (resourceType)
                 {
-                    case ResourceType.Bois:
+                    case ResourceType.Wood:
                         RessourcesGlobales.Instance.AjouterBois(1); // Ajoute 1 bois
                         break;
-                    case ResourceType.Pierre:
+                    case ResourceType.Stone:
                         RessourcesGlobales.Instance.AjouterPierre(1); // Ajoute 1 pierre
                         break;
-                    case ResourceType.Nourriture:
+                    case ResourceType.Food:
                         RessourcesGlobales.Instance.AjouterNourriture(1); // Ajoute 1 nourriture
                         break;
                 }
@@ -252,12 +252,12 @@ public class AiController : MonoBehaviour
         }
 
         // Gérer le mouvement du Wanderer lorsqu'il atteint sa destination
-        if (etatActuel == AiState.Wanderer && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+        if (this.gameObject.tag == "Wanderer" && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
         {
             DefinirDestination();
         }
 
-        if (etatActuel == AiState.School && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+        if (currentState == AiState.School && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
         {
 
             DefinirDestination();
@@ -267,7 +267,7 @@ public class AiController : MonoBehaviour
 
     public void GoBuild(Transform Position)
     {
-        etatActuel = AiState.Travail;
+        currentState = AiState.Work;
         priorityDestination = Position;
         agent.SetDestination(Position.position);
         //Debug.Log(Position.position);
@@ -276,7 +276,7 @@ public class AiController : MonoBehaviour
     public void EndBuild()
     {
         priorityDestination = null;
-        etatActuel = AiState.Wanderer;
+        currentState = AiState.Wanderer;
     }
 
     public bool IsAtWorkDestination()
@@ -291,15 +291,15 @@ public class AiController : MonoBehaviour
         Vector3 randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
         List<Transform> waypoints = new List<Transform>();
 
-        switch (etatActuel)
+        switch (currentState)
         {
-            case AiState.Travail:
+            case AiState.Work:
                 waypoints = workWaypoints;
                 break;
-            case AiState.Nourriture:
+            case AiState.Food:
                 waypoints = foodWaypoints;
                 break;
-            case AiState.Repos:
+            case AiState.Rest:
                 waypoints = restWaypoints;
                 break;
             case AiState.Wanderer:
@@ -311,7 +311,7 @@ public class AiController : MonoBehaviour
         }
         if (waypoints.Count == 0)
         {
-            if(etatActuel == AiState.Repos)
+            if(currentState == AiState.Rest)
             {
                 RessourcesGlobales.Instance.AddProsperity(-2);
                 waypoints = wandererWaypoints;
@@ -319,7 +319,7 @@ public class AiController : MonoBehaviour
             return;
         }
 
-        if (etatActuel == AiState.Wanderer)
+        if (currentState == AiState.Wanderer)
         {
             // Choisir un waypoint aléatoire pour le Wanderer
             int index = Random.Range(0, waypoints.Count);
@@ -349,7 +349,7 @@ public class AiController : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Impossible de trouver un waypoint pour l'état " + etatActuel);
+                Debug.LogWarning("Impossible de trouver un waypoint pour l'état " + currentState);
                 agent.SetDestination(transform.position); // Ne pas bouger
             }
         }
@@ -386,24 +386,24 @@ public class AiController : MonoBehaviour
     {
         switch (etatActuel)
         {
-            case AiState.Travail:
-                return AiState.Travail;
-            case AiState.Repos:
-                return AiState.Nourriture;
-            case AiState.Nourriture:
-                return AiState.Travail;
+            case AiState.Work:
+                return AiState.Work;
+            case AiState.Rest:
+                return AiState.Food;
+            case AiState.Food:
+                return AiState.Work;
             case AiState.School:
                 return AiState.School;
             case AiState.Wanderer:
                 return AiState.Wanderer; // Wanderer reste dans le même état
             default:
-                return AiState.Travail;
+                return AiState.Work;
         }
     }
 
     public void SchoolState()
     {
-        etatActuel = AiState.School;
+        currentState = AiState.School;
         var schoolWaypointsObjects = GameObject.FindGameObjectsWithTag("SchoolWaypoint");
 
         foreach (var obj in schoolWaypointsObjects)
@@ -414,7 +414,7 @@ public class AiController : MonoBehaviour
 
     public void RestState()
     {
-        etatActuel = AiState.Nourriture;
+        currentState = AiState.Food;
     }
 
     public void RestCoord()

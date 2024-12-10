@@ -16,9 +16,11 @@ public class DestroyManager: MonoBehaviour
 
     private static DestroyManager destroyManager;
 
+    /*
     public delegate void FinishingTrainingHandler();
     public static event FinishingTrainingHandler OnDestinationReached;
 
+    
     private void OnEnable()
     {
         OnDestinationReached += ReplaceStudiantByNewJob; 
@@ -34,7 +36,7 @@ public class DestroyManager: MonoBehaviour
         // Invoquer l'événement
         OnDestinationReached?.Invoke();
 
-    }
+    }*/
 
     public void CollectDatas(GameObject aiSelected,GameObject prefabToInstantiate)
     {
@@ -44,20 +46,24 @@ public class DestroyManager: MonoBehaviour
         var age = aiController.age;
         var pos = aiSelected.transform.position;
         Destroy(aiReferences);
-        studiantPrefabCopy = Instantiate(studiantPrefab, pos, Quaternion.identity, locationToInstantiate.transform);
+
+        // Instancier le prefab
+        destroyManager.studiantPrefabCopy = Instantiate(studiantPrefab, pos, Quaternion.identity, locationToInstantiate.transform);
+        Debug.Log("Prefab instancié : " + destroyManager.studiantPrefabCopy);
         var studiantController = studiantPrefabCopy.GetComponent<AiController>();
+
         studiantController.age = age;
         studiantController.SchoolState();
-        OnEnable();
     }
 
-    public void ReplaceStudiantByNewJob()
+    public static void ReplaceStudiantByNewJob()
     {
-        var age = studiantPrefabCopy.GetComponent<AiController>().age;
-        var pos = studiantPrefabCopy.transform.position;
-        var obj = Instantiate(futurePrefab,pos, Quaternion.identity);
-        obj.GetComponent<AiController>().age = age;
-        //Destroy(studiantPrefabCopy);
+        
+        var age = destroyManager.studiantPrefabCopy.GetComponent<AiController>().age;
+        var pos = destroyManager.studiantPrefabCopy.transform.position;
+        /*var obj = Instantiate(destroyManager.futurePrefab, pos, Quaternion.identity, destroyManager.locationToInstantiate.transform);
+        obj.GetComponent<AiController>().age = age;*/
+        Destroy(destroyManager.studiantPrefabCopy);
     }
 
 }

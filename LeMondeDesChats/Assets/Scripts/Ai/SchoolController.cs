@@ -16,16 +16,18 @@ public class SchoolController : MonoBehaviour
 
     [SerializeField]
     private GameObject[] entityPrefab;
+    private string information;
 
     private void Start()
     {
         Button buttonSchool = panelSchool.GetComponent<Button>();
         buttonSchool.interactable = false;
         panelSchool.GetComponent<Image>().color = Color.gray;
+        information = aiSelector.schoolText.text;
     }
     public void SelectJob()
     {
-        aiSelector.schoolText.text = GetTextBeforeColon(aiSelector.schoolText.text) + ": "+  dropDownJobs.options[dropDownJobs.value].text;
+        aiSelector.schoolText.text = GetTextBeforeColon(information) + ": "+  dropDownJobs.options[dropDownJobs.value].text;
         foreach (var entity in entityPrefab)
         {
             if (entity.tag == dropDownJobs.options[dropDownJobs.value].text)
@@ -34,6 +36,8 @@ public class SchoolController : MonoBehaviour
                 break;
             }
         }
+        Debug.Log("Drop" + prefabToInstantiate);
+
 
     }
 
@@ -45,19 +49,25 @@ public class SchoolController : MonoBehaviour
     }
     public void GoToSchool()
     {
-        var aiControllerSelected =  aiSelector.aiSelected.GetComponent<AiController>();
-        Debug.Log(prefabToInstantiate);
-        destroyManager.CollectDatas(aiSelector.aiSelected,prefabToInstantiate);
-
-        if(Time.timeScale == 0f)
+        if(prefabToInstantiate != null)
         {
-            QueueActions.AddActions(aiControllerSelected.SchoolState);
+            var aiControllerSelected = aiSelector.aiSelected.GetComponent<AiController>();
+            Debug.Log(prefabToInstantiate);
+            destroyManager.CollectDatas(aiSelector.aiSelected, prefabToInstantiate);
+
+            if (Time.timeScale == 0f)
+            {
+                QueueActions.AddActions(aiControllerSelected.SchoolState);
+            }
+            else
+            {
+                aiControllerSelected.SchoolState();
+            }
         }
         else
         {
-            aiControllerSelected.SchoolState();
+            aiSelector.schoolText.text = "Select a job";
         }
-        
     }
 
 

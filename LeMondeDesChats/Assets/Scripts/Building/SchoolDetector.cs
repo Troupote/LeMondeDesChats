@@ -11,10 +11,10 @@ public class SchoolDetector : MonoBehaviour
         if (aiController != null)
         {
 
-            if (aiController.etatActuel == AiController.AiState.School)
+            if (aiController.currentState == AiController.AiState.School)
             {
                
-                DestroyManager.TriggerDestinationReached();
+                DestroyManager.ReplaceStudiantByNewJob();
             }
         }
     }
