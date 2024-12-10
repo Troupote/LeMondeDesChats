@@ -25,11 +25,17 @@ public class RestHouse : MonoBehaviour
 
     IEnumerator ActiveRenderer(GameObject obj)
     {
-        obj.GetComponent<MeshRenderer>().enabled = false;
-        yield return new WaitForSeconds(3f);
-        obj.GetComponent<MeshRenderer>().enabled = true;
-        obj.GetComponent<AiController>().RestState();
-        remainingRoom.Remove(obj.GetComponent<AiController>());
+        var renderer = obj.GetComponent<MeshRenderer>();
+        var ai = obj.GetComponent<AiController>();
 
+        renderer.enabled = false;
+        yield return new WaitForSeconds(3f);
+
+        if (ai != null)
+        {
+            obj.GetComponent<MeshRenderer>().enabled = true;
+            ai?.RestState();
+            remainingRoom.Remove(ai);
+        }
     }
 }

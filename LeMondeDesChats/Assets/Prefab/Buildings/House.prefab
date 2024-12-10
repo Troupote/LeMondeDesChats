@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 7694203314518996735}
   - component: {fileID: 2272132110027041361}
   - component: {fileID: 6524046153205262892}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House
   m_TagString: RestWaypoint
   m_Icon: {fileID: 0}

@@ -2,8 +2,11 @@ using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class BuildManager : MonoBehaviour
@@ -20,8 +23,8 @@ public class BuildManager : MonoBehaviour
     [SerializeField] private bool _deactivateBuilding = true;
 
     private List<BuildButton> _buildButtons;
-    private AiController[] _builders;
-    private bool _hasEnoughBuilderComputed;
+    private static AiController[] _builders;
+    private static bool _getAvailableBuildersComputed;
     public SchoolController _schoolController;
 
     struct BuildButton
@@ -75,11 +78,14 @@ public class BuildManager : MonoBehaviour
             foreach (var button in _buildButtons)
                 button.Update();
         }
+
+        if (Keyboard.current.escapeKey.isPressed)
+            StopBuilding();
     }
 
     private void LateUpdate()
     {
-        _hasEnoughBuilderComputed = false;
+        _getAvailableBuildersComputed = false;
     }
 
     public void StartBuilding(BuildingSO SO)
@@ -162,15 +168,24 @@ public class BuildManager : MonoBehaviour
 
     public static bool HasEnoughBuilder(BuildingSO SO, out AiController[] builders)
     {
-        Instance._builders = GameObject.FindGameObjectsWithTag(Instance._builderTag)
-            .Select(x => x.GetComponent<AiController>())
-            .Where(y => y.currentState != AiController.AiState.Work)
-            .ToArray();
-
-        // yeah optimisation, bottleneck (no), performance wasted, and all that... later
-        builders = Instance._builders;
-        return Instance._builders.Length >= SO.Worker;
+        builders = GetAvailableBuilders();
+        return builders.Length >= SO.Worker;
     }
 
     public static bool HasEnoughBuilder(BuildingSO SO) => HasEnoughBuilder(SO, out AiController[] builders);
+
+    public static AiController[] GetAvailableBuilders()
+    {
+        // yeah optimisation, bottleneck (no), performance wasted, and all that... later
+        if (!_getAvailableBuildersComputed)
+        {
+            _builders = GameObject.FindGameObjectsWithTag(Instance._builderTag)
+                .Select(x => x.GetComponent<AiController>())
+                .Where(y => y.currentState != AiController.AiState.Work)
+                .ToArray();
+            _getAvailableBuildersComputed = true;
+        }
+
+        return _builders;
+    }
 }

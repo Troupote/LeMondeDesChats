@@ -95,7 +95,7 @@ public class RessourcesGlobales : MonoBehaviour
         if (properityValue <= 0)
         {
             properityValue = 0;
-            canvasManager?.EndGame(false); // End game if prosperity drops to zero
+            //canvasManager?.EndGame(false);
         }
         else if (properityValue >= 100)
         {

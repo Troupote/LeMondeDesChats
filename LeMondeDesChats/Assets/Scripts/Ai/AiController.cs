@@ -70,6 +70,7 @@ public class AiController : MonoBehaviour
     private bool resourceCollected = false;
 
     private Transform priorityDestination;
+    private RestHouse restHouse;
 
     void Awake()
     {
@@ -375,6 +376,7 @@ public class AiController : MonoBehaviour
     /// </summary>
     void OnDestroy()
     {
+        restHouse.remainingRoom.Remove(this);
         TimeManager timeManager = FindObjectOfType<TimeManager>();
 
         if (timeManager != null)
@@ -436,9 +438,10 @@ public class AiController : MonoBehaviour
 
         foreach (var obj in restWaypointsObjects)
         {
-            if (obj.GetComponent<RestHouse>().remainingRoom.Count < 5)
+            restHouse = obj.GetComponent<RestHouse>();
+            if (restHouse.remainingRoom.Count<5)
             {
-                obj.GetComponent<RestHouse>().remainingRoom.Add(this);
+                restHouse.remainingRoom.Add(this);
                 restWaypoints.Add(obj.transform);
                 break;
             }
