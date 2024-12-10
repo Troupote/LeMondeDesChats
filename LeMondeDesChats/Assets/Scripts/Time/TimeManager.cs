@@ -113,8 +113,7 @@ public class TimeManager : MonoBehaviour
 
         // Consommation de nourriture
         int totalIndividus = individuals.Count;
-        int nourritureDisponible = RessourcesGlobales.Instance.nourriture;
-
+        int nourritureDisponible = RessourcesGlobales.Instance.nourriture + RessourcesGlobales.Instance.farmProductions;
         if (nourritureDisponible >= totalIndividus)
         {
             RessourcesGlobales.Instance.nourriture -= totalIndividus;
@@ -133,7 +132,7 @@ public class TimeManager : MonoBehaviour
                     AiController individuAffame = individuals[index];
                     individuals.RemoveAt(index);
                     Destroy(individuAffame.gameObject);
-                    Debug.Log(individuAffame.gameObject.name + " est mort de faim.");
+                    //Debug.Log(individuAffame.gameObject.name + " est mort de faim.");
                 }
             }
         }

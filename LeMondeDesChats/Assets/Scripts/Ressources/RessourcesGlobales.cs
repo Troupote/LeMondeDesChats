@@ -9,6 +9,8 @@ public class RessourcesGlobales : MonoBehaviour
     public int properityValue;
     public int prosperityMax;
 
+
+    public int farmProductions = 0;
     public int nbrVillager = 0;
     public int nbrBuilder = 0;
     [field: SerializeField] public int bois { get; private set; } = 0;
@@ -37,6 +39,7 @@ public class RessourcesGlobales : MonoBehaviour
             canvasManager?.EndGame(false);
         }
     }
+
 
     public void RegisterBuilderAlive(int value)
     {
@@ -94,6 +97,6 @@ public class RessourcesGlobales : MonoBehaviour
     {
         Instance.bois -= SO.Wood;
         Instance.pierre -= SO.Stone;
-        Instance.AddProsperity(10);
+        
     }
 }

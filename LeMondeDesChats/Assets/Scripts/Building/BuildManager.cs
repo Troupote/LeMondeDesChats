@@ -102,24 +102,15 @@ public class BuildManager : MonoBehaviour
             && HasEnoughBuilder(Building, out var builders))
         {
             Instance.StartCoroutine(Coroutine_StartBuilding(tile, Building, builders));
-            switch (Building.Prefab.name)
-            {
-                case "Farm":
-                    break;
-                case "House":
-                    break;
-                case "Library":
-                    break;
-                case "Museum":
-                    break;
-                case "School":
-                    Instance._schoolController.UnlockSchool();
-                    break;
-
-            }
+   
 
             if (Instance._deactivateBuilding)
+            {
+       
                 Instance.StopBuilding();
+
+            }
+ 
         }
     }
 
@@ -128,6 +119,8 @@ public class BuildManager : MonoBehaviour
         var building = Instantiate(SO.Prefab, tile.transform);
         building.SetActive(false);
         tile.SetBuilding(building);
+
+        var buildingName = Building.Prefab.name;
 
         var currentBuilders = new List<AiController>();
         for (int i = 0; i < SO.Worker; i++)
@@ -140,6 +133,25 @@ public class BuildManager : MonoBehaviour
 
         building.SetActive(true);
         RessourcesGlobales.UseRessources(SO);
+
+        switch (buildingName)
+        {
+            case "Farm":
+                RessourcesGlobales.Instance.farmProductions += 5;
+                break;
+            case "House":
+                break;
+            case "Library":
+                RessourcesGlobales.Instance.AddProsperity(10);
+                break;
+            case "Museum":
+                RessourcesGlobales.Instance.AddProsperity(15);
+                break;
+            case "School":
+                Instance._schoolController.UnlockSchool();
+                break;
+
+        }
 
         foreach (var builder in currentBuilders)
             builder.EndBuild();

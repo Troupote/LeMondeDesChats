@@ -7,7 +7,7 @@ public class QueueActions : MonoBehaviour
     public static QueueActions QueueInstance;
     private static List<Action> queuedActions = new List<Action>();
 
-    private static DestroyManager destroyManager;
+    
 
     public static void ClearActions()
     {
