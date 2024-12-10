@@ -164,7 +164,7 @@ public class BuildManager : MonoBehaviour
     {
         Instance._builders = GameObject.FindGameObjectsWithTag(Instance._builderTag)
             .Select(x => x.GetComponent<AiController>())
-            .Where(y => y.currentState != AiController.AiState.Travail)
+            .Where(y => y.currentState != AiController.AiState.Work)
             .ToArray();
 
         // yeah optimisation, bottleneck (no), performance wasted, and all that... later

@@ -11,7 +11,7 @@ public class RestHouse : MonoBehaviour
     {
         if(other.GetComponent<AiController>() != null)
         {
-            if (other.GetComponent<AiController>().currentState == AiController.AiState.Repos)
+            if (other.GetComponent<AiController>().currentState == AiController.AiState.Rest)
             {
                 if (remainingRoom.Count < 5)
                 {
