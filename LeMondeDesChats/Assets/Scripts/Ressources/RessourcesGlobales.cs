@@ -72,7 +72,7 @@ public class RessourcesGlobales : MonoBehaviour
         if (properityValue <= 0)
         {
             properityValue = 0;
-            canvasManager?.EndGame(false);
+            //canvasManager?.EndGame(false);
         }
         else if (properityValue >= 100)
         {

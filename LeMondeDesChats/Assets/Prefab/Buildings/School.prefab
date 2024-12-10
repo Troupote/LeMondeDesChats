@@ -180,7 +180,7 @@ GameObject:
   - component: {fileID: -7628591972460274618}
   - component: {fileID: 8437598561242959859}
   - component: {fileID: -8031658547978786780}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: School
   m_TagString: SchoolWaypoint
   m_Icon: {fileID: 0}
