@@ -18,6 +18,10 @@ public class BuildButtonHandler : MonoBehaviour
     private void Update()
     {
         if (_button != null)
+        {
             _button.interactable = RessourcesGlobales.IsRessourcesAvailable(BuildingSO);
+            this.GetComponent<Image>().color = Color.white;
+        }
+            
     }
 }

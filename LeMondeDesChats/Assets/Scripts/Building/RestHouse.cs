@@ -6,24 +6,30 @@ public class RestHouse : MonoBehaviour
 {
     private int remainingRoom = 4;
 
+
     private void OnTriggerEnter(Collider other)
     {
-        if(other.GetComponent<AiController>().etatActuel == AiController.AiState.Repos)
+        if(other.GetComponent<AiController>() != null)
         {
-            if (remainingRoom > 0)
+            if (other.GetComponent<AiController>().etatActuel == AiController.AiState.Repos)
             {
-                remainingRoom--;
-                var objRenderer = other.GetComponent<MeshRenderer>();
+                if (remainingRoom > 0)
+                {
+                    remainingRoom--;
+                    var objRenderer = other.GetComponent<MeshRenderer>();
+                }
             }
         }
 
+
     }
 
-    IEnumerator ActiveRenderer(MeshRenderer meshRenderer)
+    IEnumerator ActiveRenderer(GameObject obj)
     {
-        meshRenderer.enabled = false;
+        obj.GetComponent<MeshRenderer>().enabled = false;
         yield return new WaitForSeconds(3f);
-        meshRenderer.enabled = true;
+        obj.GetComponent<MeshRenderer>().enabled = true;
+        obj.GetComponent<AiController>().RestState();
 
     }
 }

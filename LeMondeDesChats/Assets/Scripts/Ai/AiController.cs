@@ -109,10 +109,11 @@ public class AiController : MonoBehaviour
         // Trouver les waypoints en fonction des tags
         var workWaypointObjects = GameObject.FindGameObjectsWithTag(TagOfWork.stringTag);
         var foodWaypointObjects = GameObject.FindGameObjectsWithTag("FoodWaypoint");
-        var restWaypointObjects = GameObject.FindGameObjectsWithTag("RestWaypoint");
+
+ 
 
         // #
-        
+
         var wandererWaypointsObjects = GameObject.FindGameObjectsWithTag("WandererWaypoint");
 
         foreach (var obj in workWaypointObjects)
@@ -125,18 +126,15 @@ public class AiController : MonoBehaviour
             foodWaypoints.Add(obj.transform);
         }
 
-        foreach (var obj in restWaypointObjects)
+        foreach (var obj in wandererWaypointsObjects)
         {
-            restWaypoints.Add(obj.transform);
+            wandererWaypoints.Add(obj.transform);
         }
 
-
-        // #
-
-        wandererWaypoints = wandererWaypointsObjects[0].GetComponent<WandererScript>().targetWanderer;
         //#
-        if(TagOfWork.stringTag == "RestWaypoint")
+        if (TagOfWork.stringTag == "RestWaypoint")
         {
+
             etatActuel = AiState.Wanderer;
         }
         else if(TagOfWork.stringTag == "SchoolWaypoint")
@@ -191,23 +189,20 @@ public class AiController : MonoBehaviour
 
 
         // Augmenter la fatigue lorsque l'agent travaille ou cherche de la nourriture
-        if (etatActuel == AiState.Travail || etatActuel == AiState.Nourriture)
+        if (etatActuel == AiState.Travail || etatActuel == AiState.Nourriture || this.tag == "Builder")
         {
             fatigue += fatigueParSeconde * Time.deltaTime;
             fatigue = Mathf.Min(fatigue, fatigueMax); // Limiter la fatigue au maximum
         }
 
+
         // Vérifier si l'agent est fatigué
-        if (fatigue >= fatigueMax && etatActuel != AiState.Nourriture)
+        if (fatigue >= fatigueMax && etatActuel != AiState.Nourriture && etatActuel != AiState.Repos)
         {
-            if(etatActuel != AiState.Nourriture)
-            {
-                RessourcesGlobales.Instance.AddProsperity(-5);
-            }
-            
-            etatActuel = AiState.Nourriture;
-            tempsEcoule = 0f; // Réinitialiser le temps écoulé pour le nouvel état
-            resourceCollected = false; // Réinitialiser le flag
+            etatActuel = AiState.Repos;
+            RestCoord();
+            tempsEcoule = 0f; 
+            resourceCollected = false; 
             DefinirDestination();
             return;
         }
@@ -315,9 +310,14 @@ public class AiController : MonoBehaviour
         }
         if (waypoints.Count == 0)
         {
-            Debug.LogWarning("Aucun waypoint trouvé pour l'état " + etatActuel);
+            if(etatActuel == AiState.Repos)
+            {
+                RessourcesGlobales.Instance.AddProsperity(-2);
+            }
             return;
         }
+
+
 
 
         if (etatActuel == AiState.Wanderer)
@@ -410,6 +410,21 @@ public class AiController : MonoBehaviour
         foreach (var obj in schoolWaypointsObjects)
         {
             schoolWaypoints.Add(obj.transform);
+        }
+    }
+
+    public void RestState()
+    {
+        etatActuel = AiState.Nourriture;
+    }
+
+    public void RestCoord()
+    {
+        var restWaypointsObjects = GameObject.FindGameObjectsWithTag("RestWaypoint");
+
+        foreach (var obj in restWaypointsObjects)
+        {
+            restWaypoints.Add(obj.transform);
         }
     }
 

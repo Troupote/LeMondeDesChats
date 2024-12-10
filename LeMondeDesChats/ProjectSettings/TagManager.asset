@@ -17,6 +17,7 @@ TagManager:
   - Miner
   - SchoolWaypoint
   - School
+  - Repos
   layers:
   - Default
   - TransparentFX
