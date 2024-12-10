@@ -4,16 +4,16 @@ using UnityEngine;
 public class TimeManager : MonoBehaviour
 {
     [Header("Time Settings")]
-    public float dayDuration = 60f; // Dur�e totale d'un cycle jour/nuit en secondes
+    public float dayDuration = 60f;
     private float dayTimer = 0f;
     public int currentDay = 0;
 
-    public float timeScale; // #
+    public float timeScale;
 
     [Header("Population Settings")]
-    public float spawnInterval = 30f; // Intervalle pour l'ajout de nouveaux individus
+    public float spawnInterval = 30f;
     private float spawnTimer = 0f;
-    public GameObject[] individualPrefab; // Prefab de l'agent AI
+    public GameObject[] individualPrefab;
     private List<AiController> individuals = new List<AiController>();
 
     [SerializeField]
@@ -21,11 +21,13 @@ public class TimeManager : MonoBehaviour
 
     [SerializeField] private GameObject locationToInstantiate;
 
-    [SerializeField]
-    private Light directionalLight;
+    [SerializeField] private Light directionalLight;
 
     private bool isTimePaused = false;
 
+    /// <summary>
+    /// Delegate and event for handling time pause notifications
+    /// </summary>
     public delegate void TimePauseHandler(bool isPaused);
     public static event TimePauseHandler OnTimePause;
 
@@ -39,24 +41,16 @@ public class TimeManager : MonoBehaviour
     {
         if (!isTimePaused)
         {
-            // Gestion du temps de la journ�e
             dayTimer += Time.deltaTime;
             canvasManager.updateTimeSlider(dayTimer);
 
-            // Calcul de la fraction du cycle (de 0 � 1)
             float cycleFraction = dayTimer / dayDuration;
-
-            // Calcul de l'angle du soleil (de 0� � 360�)
             float sunAngle = cycleFraction * 360f;
-
-            // Mise � jour de la rotation de la lumi�re directionnelle
             directionalLight.transform.rotation = Quaternion.Euler(new Vector3(sunAngle - 90f, 0f, 0f));
 
-            // Ajustement de l'intensit� de la lumi�re pour simuler le jour et la nuit
             float lightIntensity = Mathf.Clamp01(Mathf.Sin(cycleFraction * Mathf.PI));
             directionalLight.intensity = lightIntensity;
 
-            // Optionnel : Ajustement de la couleur de la lumi�re pour simuler les levers et couchers de soleil
             UpdateLightColor(cycleFraction);
 
             if (dayTimer >= dayDuration)
@@ -66,7 +60,6 @@ public class TimeManager : MonoBehaviour
                 EndOfDay();
             }
 
-            // Gestion du temps pour l'ajout de nouveaux individus
             spawnTimer += Time.deltaTime;
             if (spawnTimer >= spawnInterval)
             {
@@ -76,54 +69,58 @@ public class TimeManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the color of the directional light based on the current cycle fraction to simulate different times of day.
+    /// </summary>
+    /// <param name="cycleFraction">The current fraction of the day cycle (0 to 1).</param>
     void UpdateLightColor(float cycleFraction)
     {
-        Color sunriseColor = new Color(1f, 0.5f, 0f); // Orange du lever de soleil
-        Color noonColor = Color.white;                // Lumi�re blanche du midi
-        Color sunsetColor = new Color(1f, 0.5f, 0f);  // Orange du coucher de soleil
-        Color nightColor = Color.black;               // Noir pour la nuit
+        Color sunriseColor = new Color(1f, 0.5f, 0f);
+        Color noonColor = Color.white;
+        Color sunsetColor = new Color(1f, 0.5f, 0f);
+        Color nightColor = Color.black;
 
-        if (cycleFraction <= 0.25f) // Lever du soleil
+        if (cycleFraction <= 0.25f)
         {
             float t = cycleFraction / 0.25f;
             directionalLight.color = Color.Lerp(nightColor, sunriseColor, t);
         }
-        else if (cycleFraction <= 0.5f) // Journ�e
+        else if (cycleFraction <= 0.5f)
         {
             float t = (cycleFraction - 0.25f) / 0.25f;
             directionalLight.color = Color.Lerp(sunriseColor, noonColor, t);
         }
-        else if (cycleFraction <= 0.75f) // Apr�s-midi vers coucher du soleil
+        else if (cycleFraction <= 0.75f)
         {
             float t = (cycleFraction - 0.5f) / 0.25f;
             directionalLight.color = Color.Lerp(noonColor, sunsetColor, t);
         }
-        else // Nuit
+        else
         {
             float t = (cycleFraction - 0.75f) / 0.25f;
             directionalLight.color = Color.Lerp(sunsetColor, nightColor, t);
         }
     }
 
+    /// <summary>
+    /// Handles end-of-day activities such as aging individuals and managing food consumption.
+    /// </summary>
     void EndOfDay()
     {
-        // Faire vieillir tous les individus
         foreach (AiController ai in individuals)
         {
             ai.AgeOneDay();
         }
 
-        // Consommation de nourriture
-        int totalIndividus = individuals.Count;
-        int nourritureDisponible = RessourcesGlobales.Instance.nourriture + RessourcesGlobales.Instance.farmProductions;
-        if (nourritureDisponible >= totalIndividus)
+        int totalIndividuals = individuals.Count;
+        int availableFood = RessourcesGlobales.Instance.nourriture + RessourcesGlobales.Instance.farmProductions;
+        if (availableFood >= totalIndividuals)
         {
-            RessourcesGlobales.Instance.nourriture -= totalIndividus;
+            RessourcesGlobales.Instance.nourriture -= totalIndividuals;
         }
         else
         {
-            // Pas assez de nourriture, des individus meurent al�atoirement
-            int deficit = totalIndividus - nourritureDisponible;
+            int deficit = totalIndividuals - availableFood;
             RessourcesGlobales.Instance.nourriture = 0;
 
             for (int i = 0; i < deficit; i++)
@@ -131,66 +128,75 @@ public class TimeManager : MonoBehaviour
                 if (individuals.Count > 0)
                 {
                     int index = Random.Range(0, individuals.Count);
-                    AiController individuAffame = individuals[index];
+                    AiController starvingIndividual = individuals[index];
                     individuals.RemoveAt(index);
-                    Destroy(individuAffame.gameObject);
-                    //Debug.Log(individuAffame.gameObject.name + " est mort de faim.");
+                    Destroy(starvingIndividual.gameObject);
                 }
                 else
                 {
                     canvasManager?.EndGame(false);
                 }
-
-
             }
         }
-        //Debug.Log("Fin du jour " + currentDay + ". Tous les individus ont vieilli.");
     }
 
+    /// <summary>
+    /// Spawns a new individual at a random position.
+    /// </summary>
     void SpawnNewIndividual()
     {
-        // D�terminer la position de spawn (� adapter selon vos besoins)
-        int randomIndex = Random.RandomRange(0, individualPrefab.Length);
+        int randomIndex = Random.Range(0, individualPrefab.Length);
         Vector3 spawnPosition = GetRandomSpawnPosition();
         Quaternion spawnRotation = Quaternion.identity;
 
         GameObject newIndividual = Instantiate(individualPrefab[randomIndex], spawnPosition, spawnRotation, locationToInstantiate.transform);
         RessourcesGlobales.Instance.RegisterVillagerAlive(1);
+
         if (newIndividual.tag == "Builder")
         {
             RessourcesGlobales.Instance.RegisterBuilderAlive(1);
         }
-            
 
-        // Ajouter le nouvel individu � la liste
         AiController aiController = newIndividual.GetComponent<AiController>();
         if (aiController != null)
         {
             individuals.Add(aiController);
-            aiController.Initialize(); // Initialiser l'agent si n�cessaire
+            aiController.Initialize();
         }
     }
 
+    /// <summary>
+    /// Generates a random spawn position within defined bounds.
+    /// </summary>
+    /// <returns>A random Vector3 position for spawning.</returns>
     Vector3 GetRandomSpawnPosition()
     {
-        // Impl�mentez votre logique pour d�terminer une position de spawn appropri�e
-        // Par exemple, une position al�atoire dans une zone d�finie
         return new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10));
     }
 
+    /// <summary>
+    /// Registers an AI controller to the list of individuals.
+    /// </summary>
+    /// <param name="ai">The AiController to register.</param>
     public void RegisterIndividual(AiController ai)
     {
         if (!individuals.Contains(ai))
             individuals.Add(ai);
     }
 
+    /// <summary>
+    /// Unregisters an AI controller from the list of individuals.
+    /// </summary>
+    /// <param name="ai">The AiController to unregister.</param>
     public void UnregisterIndividual(AiController ai)
     {
         if (individuals.Contains(ai))
             individuals.Remove(ai);
     }
 
-
+    /// <summary>
+    /// Pauses or resumes the game time and notifies AI agents of the pause state.
+    /// </summary>
     public void PauseTime()
     {
         if (!isTimePaused)
@@ -198,7 +204,6 @@ public class TimeManager : MonoBehaviour
             isTimePaused = true;
             Time.timeScale = 0f;
 
-            // Notifier les agents AI
             OnTimePause?.Invoke(true);
         }
         else
@@ -206,21 +211,9 @@ public class TimeManager : MonoBehaviour
             isTimePaused = false;
             Time.timeScale = 1f;
 
-            // Notifier les agents AI
             OnTimePause?.Invoke(false);
             QueueActions.StartActions();
             QueueActions.ClearActions();
-
         }
-
     }
-
-   /* public void ResumeTime()
-    {
-        isTimePaused = false;
-        Time.timeScale = 1f;
-
-        // Notifier les agents AI
-        OnTimePause?.Invoke(false);
-    }*/
 }
